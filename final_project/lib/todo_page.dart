@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'todo_check_page.dart';
+import 'home.dart';
+
+List<String> _todoItems = [];
+List<String> _doneItems = [];
 
 class TodoList extends StatefulWidget {
   @override
@@ -6,30 +11,131 @@ class TodoList extends StatefulWidget {
 }
 
 class TodoListState extends State<TodoList> {
-  List<String> _todoItems = [];
-
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
         backgroundColor: Color(0xFF91B3E7),
         title: new Text('Todo List')
       ),
-      body: _buildTodoList(),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _pushAddTodoScreen,
-        tooltip: 'Add task',
-        child: new Icon(Icons.add)
+      body: Column(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: 30),
+            child: Text(selectedDate.substring(0,10), style: TextStyle(color: Color(0xFF91B3E7), fontSize: 40, fontWeight: FontWeight.bold)),
+          ),
+          _buildTodoList(),
+          Row(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(left: 50, bottom: 50),
+                child: FittedBox(
+                  child: FloatingActionButton(
+                    backgroundColor: Color(0xFF91B3E7),
+                    child: new Icon(Icons.add),
+                    onPressed: _pushAddTodoScreen,
+                  )
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 100, bottom: 50),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 150, minHeight: 50),
+                  child: RaisedButton(
+                    child: new Text('CHECK', style: TextStyle(fontSize: 20, color: Colors.white)),
+                    color: Color(0xFF91B3E7),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => TodoCheck(data: _doneItems)),
+                      );
+                    }
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildTodoList() {
-    return new ListView.builder(
-      itemBuilder: (context, index) {
-        if(index < _todoItems.length) {
-          return _buildTodoItem(_todoItems[index], index);
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.only(top: 30, bottom: 30, left: 30, right: 30), //for text
+        margin: EdgeInsets.only(top: 30, bottom: 50, left: 20, right: 20), //for border
+        decoration: BoxDecoration(
+          border: Border.all(width: 5, color: Color(0xFF91B3E7)),
+          borderRadius: const BorderRadius.all(const Radius.circular(8)),
+        ),
+        child: ListView.builder(
+          itemBuilder: (context, index) {
+            if(index < _todoItems.length) {
+              return _buildTodoItem(_todoItems[index], index);
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTodoItem(String todoText, int index) {
+    return Container(
+      child: ListTile(
+        title: new Text(todoText),
+        onTap: () => _promptRemoveTodoItem(index)
+      ),
+    );
+  }
+
+  void _promptRemoveTodoItem(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text('Mark "${_todoItems[index]}" as done?'),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text('CANCEL'),
+              onPressed: () => Navigator.of(context).pop()
+            ),
+            new FlatButton(
+              child: new Text('MARK AS DONE'),
+              onPressed: () {
+                setState(() => _doneItems.add("${_todoItems[index]}"));
+                //_removeTodoItem(index);
+                Navigator.of(context).pop();
+              }
+            )
+          ]
+        );
+      }
+    );
+  }
+
+  void _pushAddTodoScreen() {
+    Navigator.of(context).push(
+      new MaterialPageRoute(
+        builder: (context) {
+          return new Scaffold(
+            appBar: new AppBar(
+              backgroundColor: Color(0xFF91B3E7),
+              title: new Text('Add a new task')
+            ),
+            body: new TextField(
+              autofocus: true,
+              onSubmitted: (val) {
+                _addTodoItem(val);
+                Navigator.pop(context);
+              },
+              decoration: new InputDecoration(
+                  hintText: 'Enter something to do...',
+                  contentPadding: const EdgeInsets.all(16.0)
+              ),
+            )
+          );
         }
-      },
+      )
     );
   }
 
@@ -39,63 +145,7 @@ class TodoListState extends State<TodoList> {
     }
   }
 
-  Widget _buildTodoItem(String todoText, int index) {
-    return new ListTile(
-        title: new Text(todoText),
-        onTap: () => _promptRemoveTodoItem(index)
-    );
-  }
-
-  void _pushAddTodoScreen() {
-    Navigator.of(context).push(
-      new MaterialPageRoute(
-        builder: (context) {
-          return new Scaffold(
-              appBar: new AppBar(
-                  title: new Text('Add a new task')
-              ),
-              body: new TextField(
-                autofocus: true,
-                onSubmitted: (val) {
-                  _addTodoItem(val);
-                  Navigator.pop(context);
-                },
-                decoration: new InputDecoration(
-                    hintText: 'Enter something to do...',
-                    contentPadding: const EdgeInsets.all(16.0)
-                ),
-              )
-          );
-        }
-      )
-    );
-  }
-
   void _removeTodoItem(int index) {
     setState(() => _todoItems.removeAt(index));
-  }
-
-  void _promptRemoveTodoItem(int index) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text('Mark "${_todoItems[index]}" as done?'),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text('CANCEL'),
-                onPressed: () => Navigator.of(context).pop()
-              ),
-              new FlatButton(
-                child: new Text('MARK AS DONE'),
-                onPressed: () {
-                  _removeTodoItem(index);
-                  Navigator.of(context).pop();
-                }
-              )
-            ]
-          );
-        }
-    );
   }
 }

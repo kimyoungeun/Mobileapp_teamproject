@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'todo_page.dart';
 
+String selectedDate;
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() {
@@ -60,6 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     onDaySelected: (date, events){
                       print(date.toIso8601String());
+                      selectedDate = date.toIso8601String();
                     },
                     headerStyle: HeaderStyle(
                       headerPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 50.0),

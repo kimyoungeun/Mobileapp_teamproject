@@ -11,7 +11,6 @@ String userEmail = "";
 String userImage = "";
 String login = "google";
 
-
 class SignInPage extends StatefulWidget {
   final String title = 'Registration';
   @override
