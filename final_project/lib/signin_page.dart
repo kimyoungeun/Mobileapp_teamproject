@@ -1,8 +1,7 @@
-import 'dart:io';
+import 'home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'home.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -13,7 +12,6 @@ String userImage = "";
 String login = "google";
 
 
-
 class SignInPage extends StatefulWidget {
   final String title = 'Registration';
   @override
@@ -21,36 +19,37 @@ class SignInPage extends StatefulWidget {
 }
 
 class SignInPageState extends State<SignInPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-          child: Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.blue[700], Colors.blue[50]])),
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 150,),
-                Center(child: Text("매" , style: TextStyle(fontSize: 18, color: Colors.white70),)),
-                SizedBox(height: 20,),
-                Center(child: Text("일", style: TextStyle(fontSize: 18, color: Colors.white70),)),
-                SizedBox(height: 20,),
-                Center(child: Text("의", style: TextStyle(fontSize: 18, color: Colors.white70),)),
-                SizedBox(height: 50,),
-                Center(child: Text("일", style: TextStyle(fontSize: 18, color: Colors.white70),)),
-                SizedBox(height: 20,),
-                Center(child: Text("상", style: TextStyle(fontSize: 18, color: Colors.white70),)),
-                SizedBox(height: 320,),
-                _GoogleSignInSection(),],),
-          )));
+        child: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF91B3E7), Color(0x0091B3E7),])),
+          child: Column(
+            children: <Widget>[
+              SizedBox(height: 150,),
+              Center(child: Text("매" , style: TextStyle(fontSize: 18, color: Colors.white),)),
+              SizedBox(height: 20,),
+              Center(child: Text("일", style: TextStyle(fontSize: 18, color: Colors.white),)),
+              SizedBox(height: 20,),
+              Center(child: Text("의", style: TextStyle(fontSize: 18, color: Colors.white),)),
+              SizedBox(height: 50,),
+              Center(child: Text("일", style: TextStyle(fontSize: 18, color: Colors.white),)),
+              SizedBox(height: 20,),
+              Center(child: Text("상", style: TextStyle(fontSize: 18, color: Colors.white),)),
+              SizedBox(height: 320,),
+              _GoogleSignInSection(),
+            ],
+          ),
+        )
+      )
+    );
   }
-
 }
-
 
 class _GoogleSignInSection extends StatefulWidget {
   @override
@@ -71,7 +70,7 @@ class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
             child: SizedBox(
               width: 250,
               child : RaisedButton(
-                color: Colors.blueAccent,
+                color: Color(0xFF91B3E7),
                 onPressed: () async {
                   _signInWithGoogle();
                   login = "google";
