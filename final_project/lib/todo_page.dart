@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'todo_check_page.dart';
-import 'home.dart';
 
 List<String> _todoItems = [];
 List<String> _doneItems = [];
+List<String> _notdoneItems = [];
 
 class TodoList extends StatefulWidget {
   @override
@@ -21,7 +21,7 @@ class TodoListState extends State<TodoList> {
         children: <Widget>[
           Container(
             margin: EdgeInsets.only(top: 30),
-            child: Text(selectedDate.substring(0,10), style: TextStyle(color: Color(0xFF91B3E7), fontSize: 40, fontWeight: FontWeight.bold)),
+            child: Text("날짜", style: TextStyle(color: Color(0xFF91B3E7), fontSize: 40, fontWeight: FontWeight.bold)),
           ),
           _buildTodoList(),
           Row(
@@ -46,7 +46,7 @@ class TodoListState extends State<TodoList> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => TodoCheck(data: _doneItems)),
+                        MaterialPageRoute(builder: (context) => TodoCheck(donedata: _doneItems, notdonedata: _notdoneItems)),
                       );
                     }
                   ),
@@ -65,7 +65,7 @@ class TodoListState extends State<TodoList> {
         padding: EdgeInsets.only(top: 30, bottom: 30, left: 30, right: 30), //for text
         margin: EdgeInsets.only(top: 30, bottom: 50, left: 20, right: 20), //for border
         decoration: BoxDecoration(
-          border: Border.all(width: 5, color: Color(0xFF91B3E7)),
+          border: Border.all(width: 3, color: Color(0xFF91B3E7)),
           borderRadius: const BorderRadius.all(const Radius.circular(8)),
         ),
         child: ListView.builder(
@@ -80,15 +80,37 @@ class TodoListState extends State<TodoList> {
   }
 
   Widget _buildTodoItem(String todoText, int index) {
-    return Container(
-      child: ListTile(
-        title: new Text(todoText),
-        onTap: () => _promptRemoveTodoItem(index)
-      ),
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            child: ListTile(
+              title: new Text(todoText),
+              //onTap: () => _promptRemoveTodoItem(index)
+            ),
+          ),
+        ),
+        IconButton(
+          icon: Icon(Icons.check),
+          onPressed: () {
+            setState(() {
+              if(_doneItems.contains(todoText) == false){
+                setState(() => _doneItems.add(todoText));
+                setState(() => _notdoneItems.remove(todoText));
+              }
+              else if(_doneItems.contains(todoText) == true){
+                setState(() => _notdoneItems.add(todoText));
+                setState(() => _doneItems.remove(todoText));
+              }
+            });
+            //_removeTodoItem(index);
+          }
+        ),
+      ],
     );
   }
 
-  void _promptRemoveTodoItem(int index) {
+  /*void _promptRemoveTodoItem(int index) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -111,7 +133,7 @@ class TodoListState extends State<TodoList> {
         );
       }
     );
-  }
+  }*/
 
   void _pushAddTodoScreen() {
     Navigator.of(context).push(
@@ -129,8 +151,8 @@ class TodoListState extends State<TodoList> {
                 Navigator.pop(context);
               },
               decoration: new InputDecoration(
-                  hintText: 'Enter something to do...',
-                  contentPadding: const EdgeInsets.all(16.0)
+                hintText: 'Enter something to do...',
+                contentPadding: const EdgeInsets.all(16.0)
               ),
             )
           );
@@ -142,6 +164,7 @@ class TodoListState extends State<TodoList> {
   void _addTodoItem(String task) {
     if(task.length > 0) {
       setState(() => _todoItems.add(task));
+      setState(() => _notdoneItems.add(task));
     }
   }
 
