@@ -22,36 +22,6 @@ class TodoCheckState extends State<TodoCheck> {
             margin: EdgeInsets.only(top: 30),
             child: Text("날짜", style: TextStyle(color: Color(0xFF91B3E7), fontSize: 40, fontWeight: FontWeight.bold)),
           ),
-//          Row(
-//            children: <Widget>[
-//              Column(
-//                children: <Widget>[
-//                  Container(
-//                    padding: EdgeInsets.only(top: 20, bottom: 20, left: 30, right: 30),
-//                    margin: EdgeInsets.only(left: 50, top: 30),
-//                    decoration: BoxDecoration(
-//                      border: Border.all(width: 3, color: Color(0xFF91B3E7)),
-//                      borderRadius: const BorderRadius.all(const Radius.circular(8)),
-//                    ),
-//                    child: Text("Done", style: TextStyle(color: Colors.black, fontSize: 20)),
-//                  ),
-//                ],
-//              ),
-//              Column(
-//                children: <Widget>[
-//                  Container(
-//                    padding: EdgeInsets.only(top: 20, bottom: 20, left: 30, right: 30),
-//                    margin: EdgeInsets.only(left: 70, top: 30),
-//                    decoration: BoxDecoration(
-//                      border: Border.all(width: 3, color: Color(0xFF91B3E7)),
-//                      borderRadius: const BorderRadius.all(const Radius.circular(8)),
-//                    ),
-//                    child: Text("To do", style: TextStyle(color: Colors.black, fontSize: 20)),
-//                  ),
-//                ],
-//              ),
-//            ],
-//          ),
           Container(
             padding: EdgeInsets.only(top: 20, bottom: 20, left: 30, right: 30),
             margin: EdgeInsets.only(top: 30, right: 250),
