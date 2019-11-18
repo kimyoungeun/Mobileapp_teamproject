@@ -66,10 +66,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       selectedDate = date.toIso8601String();
                     },
                     headerStyle: HeaderStyle(
-                      headerPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 50.0),
-                      centerHeaderTitle: true,
-                      //titleTextStyle: TextStyle(color: Color(0xFF91B3E7), fontSize: 20, fontWeight: FontWeight.bold),
-                      formatButtonVisible: false
+                        headerPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 50.0),
+                        centerHeaderTitle: true,
+                        //titleTextStyle: TextStyle(color: Color(0xFF91B3E7), fontSize: 20, fontWeight: FontWeight.bold),
+                        formatButtonVisible: false
                     ),
                     calendarController: _controller,
                   )
@@ -135,4 +135,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
