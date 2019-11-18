@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home.dart';
 
 class TodoCheck extends StatefulWidget {
   final List<String> donedata;
@@ -20,7 +21,7 @@ class TodoCheckState extends State<TodoCheck> {
         children: <Widget>[
           Container(
             margin: EdgeInsets.only(top: 30),
-            child: Text("날짜", style: TextStyle(color: Color(0xFF91B3E7), fontSize: 40, fontWeight: FontWeight.bold)),
+            child: Text(selectedDate.substring(0,10), style: TextStyle(color: Color(0xFF91B3E7), fontSize: 40, fontWeight: FontWeight.bold)),
           ),
           Container(
             padding: EdgeInsets.only(top: 20, bottom: 20, left: 30, right: 30),

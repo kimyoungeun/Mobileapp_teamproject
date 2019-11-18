@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'todo_check_page.dart';
 import 'signin_page.dart';
+import 'home.dart';
 
 List<String> _todoItems = [];
 List<String> _doneItems = [];
@@ -23,7 +24,7 @@ class TodoListState extends State<TodoList> {
         children: <Widget>[
           Container(
             margin: EdgeInsets.only(top: 30),
-            child: Text("날짜", style: TextStyle(color: Color(0xFF91B3E7), fontSize: 40, fontWeight: FontWeight.bold)),
+            child: Text(selectedDate.substring(0,10), style: TextStyle(color: Color(0xFF91B3E7), fontSize: 40, fontWeight: FontWeight.bold)),
           ),
           _buildBody(context),
           Row(

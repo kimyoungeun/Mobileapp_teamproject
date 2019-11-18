@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'todo_page.dart';
+import 'review_page.dart';
+
+String selectedDate = DateTime.now().toString();
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -60,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     onDaySelected: (date, events){
                       print(date.toIso8601String());
+                      selectedDate = date.toIso8601String();
                     },
                     headerStyle: HeaderStyle(
                       headerPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 50.0),
@@ -112,7 +116,16 @@ class _MyHomePageState extends State<MyHomePage> {
             child: new Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                new Icon(Icons.star),
+                //new Icon(Icons.star),
+                new IconButton(
+                  icon: Icon(Icons.star),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ReviewPage()),
+                    );
+                  },
+                ),
                 new Text("Review Note")
               ],
             ),
