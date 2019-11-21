@@ -68,7 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     headerStyle: HeaderStyle(
                         headerPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 50.0),
                         centerHeaderTitle: true,
-                        //titleTextStyle: TextStyle(color: Color(0xFF91B3E7), fontSize: 20, fontWeight: FontWeight.bold),
                         formatButtonVisible: false
                     ),
                     calendarController: _controller,

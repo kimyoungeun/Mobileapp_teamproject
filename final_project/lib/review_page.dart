@@ -84,113 +84,56 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
   Widget _buildListCard(BuildContext context, List<DocumentSnapshot> snapshot) {
     List<DocumentSnapshot> reviews = snapshot;
 
+    snapshot.sort((a, b) {
+      return a["date"].compareTo(b["date"]);
+    });
+
     List<Card> _cards = reviews.map((product) {
       final record = Record.fromSnapshot(product);
-      return
-        Card(
+      return Card(
           clipBehavior: Clip.antiAlias,
           child: Container(
-            padding: EdgeInsets.all(5.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Color(0xFF91B3E7), width: 2),
-            ),
-            child: Row(
+            padding: EdgeInsets.all(1.0),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Container(
-                  width:95,
-                  padding: EdgeInsets.only(left : 4.0),
-                  child: Center(
-                    child: Text(
-                      record.date,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight
-                          .bold, color: Colors.grey[800],),
+                ListTile(
+                  leading: Text(record.date, style: TextStyle(fontSize: 15)),
+                  title: InkWell(
+                    child: Container(
+                      padding: EdgeInsets.only(bottom: 10, top: 10),
+                      child: Text(record.title, style: Theme.of(context).textTheme.title)
                     ),
                   ),
+                  subtitle: Text(record.author, style: Theme.of(context).textTheme.subtitle),
+
                 ),
-                Container(
-                    margin: EdgeInsets.only(left: 4.0),
-                    height: 100, child: VerticalDivider(color: Colors.blueAccent)),
-                Row(
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          child: Padding(
-                              padding: EdgeInsets.fromLTRB(6.0, 0.0, 16.0, 8.0),
-                              child: FittedBox(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    SizedBox(height: 3),
-                                    Row(
-                                      children : <Widget> [
-                                        Container(
-                                          padding : EdgeInsets.only(left: 3.0),
-                                          child : Text(
-                                            "Title :    ",
-                                            style: TextStyle(fontSize: 11, color: Colors.grey[800], fontWeight: FontWeight.bold, letterSpacing: 1.0),
-                                          ),),
-                                        Text(
-                                          record.title,
-                                          style: TextStyle(fontSize: 11),
-                                        ),
-                                      ],),
-                                    SizedBox(height: 3),
-                                    Row(
-                                      children : <Widget> [
-                                        Container(
-                                          padding : EdgeInsets.only(left: 3.0),
-                                          child : Text(
-                                            person,
-                                            style: TextStyle(fontSize: 11, color: Colors.grey[800], fontWeight: FontWeight.bold, letterSpacing: 1.0),
-                                          ),),
-                                        Text(
-                                          record.author,
-                                          style: TextStyle(fontSize: 11),
-                                        ),
-                                      ],),
-                                    SizedBox(height: 5),
-                                    _buildstar(record.star),
-                                  ],
-                                ),
-                              )
-                          ),
+                ButtonTheme.bar(
+                  child: ButtonBar(
+                    children: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Firestore.instance.collection(collection).document(record.title).delete();
+                        },
+                        child: Container(
+                          child: Text('DELETE', style: TextStyle(color: Theme.of(context).primaryColor))
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        Firestore.instance.collection(collection).document(record.title).delete();
-                      },
-                      child: Container(
-                          padding: EdgeInsets.only(left: 40.0),
-                          alignment: Alignment.bottomLeft,
-                          child: Icon(Icons.clear)
                       ),
-                    ),
-                    SizedBox(height: 45),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailPage(record: record),
-                          ),
-                        );
-                      },
-                      child: Container(
-                          padding: EdgeInsets.only(left: 40.0),
-                          alignment: Alignment.bottomLeft,
-                          child: Icon(Icons.arrow_forward)
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailPage(record: record),
+                            ),
+                          );
+                        },
+                        child: Container(
+                            child: Text('MORE', style: TextStyle(color: Theme.of(context).primaryColor))
+                        ),
                       ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -201,50 +144,48 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
     return Scaffold(
         body: Column(
           children: <Widget>[
+            Container(
+                padding: const EdgeInsets.only(top: 30),
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: 370,
+                  height: 40,
+                  child : RaisedButton(
+                    color: Theme.of(context).primaryColor,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddPage(page: _page),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Icon(Icons.add, color: Colors.white),
+                          Text("    Add  a  review ... ", style : TextStyle(fontSize: 18, color: Colors.white)),
+                        ],
+                      )
+                  ),
+                )
+            ),
             Expanded(
               flex: 5,
               child: Padding(
-                padding: EdgeInsets.only(top: 30.0),
+                padding: EdgeInsets.only(top: 1.0),
                 child: Center(
                   child: OrientationBuilder(
                     builder: (context, orientation) {
                       return GridView.count(
                         crossAxisCount: orientation == Orientation.portrait ? 1 : 1,
-                        mainAxisSpacing: 25.0,
-                        padding: EdgeInsets.all(16.0),
-                        childAspectRatio: 8.0 / 2.5,
-                        children:
-                        _cards,
+                        mainAxisSpacing: 7.0,
+                        padding: EdgeInsets.all(18.0),
+                        childAspectRatio: 7.2 / 2.8,
+                        children: _cards,
                       );
                     },
                   ),
                 ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget> [
-                  Container(
-                    margin: EdgeInsets.only(bottom: 30),
-                    child: FittedBox(
-                      child: Center(
-                        child : FloatingActionButton(
-                          backgroundColor: Color(0xFF91B3E7),
-                          child: new Icon(Icons.add),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddPage(page: _page),
-                              ),
-                            );
-                          },
-                        ),),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
@@ -257,15 +198,15 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
     return new Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Color(0xFF91B3E7),
+          backgroundColor: Colors.white,
           title: TabBar(
             unselectedLabelColor: Colors.white,
             labelColor: Colors.amber,
             tabs: [
-              new Tab(icon: new Icon(Icons.movie)),
-              new Tab(icon: new Icon(Icons.book),),
-              new Tab(icon: new Icon(Icons.wallpaper),),
-              new Tab(icon: new Icon(Icons.audiotrack),)
+              new Tab(icon: new Icon(Icons.movie, color: Theme.of(context).primaryColor)),
+              new Tab(icon: new Icon(Icons.book, color: Theme.of(context).primaryColor)),
+              new Tab(icon: new Icon(Icons.wallpaper, color: Theme.of(context).primaryColor)),
+              new Tab(icon: new Icon(Icons.audiotrack, color: Theme.of(context).primaryColor))
             ],
             controller: _tabController,
             indicatorColor: Colors.white,
@@ -362,7 +303,7 @@ class _DetailPageState extends State<DetailPage> {
           flex: 1,
           child: Column(
             children: <Widget>[
-              Text(date,),
+              Text(date),
             ],
           ),
         ),
@@ -371,7 +312,7 @@ class _DetailPageState extends State<DetailPage> {
           child: Column(
             children: <Widget>[
               IconButton(
-                icon: Icon(Icons.calendar_today, color: Color(0xFF91B3E7),),
+                icon: Icon(Icons.calendar_today, color: Theme.of(context).primaryColor),
                 onPressed: (){
                   _selectDate(context);
                 },
@@ -418,7 +359,7 @@ class _DetailPageState extends State<DetailPage> {
 
     return Scaffold(
       appBar: new AppBar(
-          backgroundColor: Color(0xFF91B3E7),
+          backgroundColor: Theme.of(context).primaryColor,
           title: new Text(detailTitle)
       ),
       body: Column(
@@ -432,7 +373,7 @@ class _DetailPageState extends State<DetailPage> {
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFF91B3E7), width: 2.5),
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center( child : Text('Date', textAlign: TextAlign.center , style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
                 ),
@@ -453,7 +394,9 @@ class _DetailPageState extends State<DetailPage> {
                   decoration: BoxDecoration(
                     border: Border.all(color: Color(0xFF91B3E7), width: 2.5),
                   ),
-                  child: Center( child : Text('Title', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0),),),
+                  child: Center(
+                    child : Text('Title', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),
+                  ),
                 ),
               ),
               Expanded(
@@ -478,7 +421,7 @@ class _DetailPageState extends State<DetailPage> {
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFF91B3E7), width: 2.5),
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center(child : Text('Director', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
                 ),
@@ -505,7 +448,7 @@ class _DetailPageState extends State<DetailPage> {
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFF91B3E7), width: 2.5),
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center( child : Text('Rating', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
                 ),
@@ -522,8 +465,8 @@ class _DetailPageState extends State<DetailPage> {
                 FlutterRatingBar(
                   initialRating: rate,
                   itemSize: 30.0,
-                  fillColor: Color(0xFF91B3E7),
-                  borderColor: Color(0xFF91B3E7),
+                  fillColor: Theme.of(context).primaryColor,
+                  borderColor: Theme.of(context).primaryColor,
                   allowHalfRating: false,
                   onRatingUpdate: (rating) {
                     rate = rating;
@@ -536,7 +479,7 @@ class _DetailPageState extends State<DetailPage> {
           Flexible(
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Color(0xFF91B3E7), width: 1.5),
+                border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
               ),
               margin: EdgeInsets.all(15.0),
               child: TextField(
@@ -551,7 +494,7 @@ class _DetailPageState extends State<DetailPage> {
           Container(
             padding: EdgeInsets.only(bottom: 50.0),
             child : RaisedButton(
-              color: Color(0xFF91B3E7),
+              color: Theme.of(context).primaryColor,
               child: Text("Save", style: TextStyle(color: Colors.white),),
               onPressed: () {
                 widget.record.reference.updateData({
@@ -623,7 +566,7 @@ class AddPageState extends State<AddPage>{
           child: Column(
             children: <Widget>[
               IconButton(
-                icon: Icon(Icons.calendar_today, color: Color(0xFF91B3E7),),
+                icon: Icon(Icons.calendar_today, color: Theme.of(context).primaryColor),
                 onPressed: (){
                   _selectDate(context);
                 },
@@ -669,7 +612,7 @@ class AddPageState extends State<AddPage>{
 
     return Scaffold(
       appBar: new AppBar(
-          backgroundColor: Color(0xFF91B3E7),
+          backgroundColor: Theme.of(context).primaryColor,
           title: new Text(detailTitle)
       ),
       body: Column(
@@ -683,9 +626,11 @@ class AddPageState extends State<AddPage>{
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFF91B3E7), width: 2.5),
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
-                  child: Center( child : Text('Date', textAlign: TextAlign.center , style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
+                  child: Center(
+                    child : Text('Date', textAlign: TextAlign.center , style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),
+                  ),
                 ),
               ),
               Expanded(
@@ -702,7 +647,7 @@ class AddPageState extends State<AddPage>{
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFF91B3E7), width: 2.5),
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center( child : Text('Title', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0),),),
                 ),
@@ -730,7 +675,7 @@ class AddPageState extends State<AddPage>{
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFF91B3E7), width: 2.5),
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center(child : Text('Director', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
                 ),
@@ -758,7 +703,7 @@ class AddPageState extends State<AddPage>{
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFF91B3E7), width: 2.5),
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center( child : Text('Rating', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
                 ),
@@ -775,8 +720,8 @@ class AddPageState extends State<AddPage>{
                 FlutterRatingBar(
                   initialRating: 0,
                   itemSize: 30.0,
-                  fillColor: Color(0xFF91B3E7),
-                  borderColor: Color(0xFF91B3E7),
+                  fillColor: Theme.of(context).primaryColor,
+                  borderColor: Theme.of(context).primaryColor,
                   allowHalfRating: false,
                   onRatingUpdate: (rating) {
                     rate2 = rating;
@@ -789,11 +734,10 @@ class AddPageState extends State<AddPage>{
           Flexible(
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Color(0xFF91B3E7), width: 1.5),
+                border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
               ),
               margin: EdgeInsets.all(15.0),
               child: TextField(
-
                 controller: _noteController,
                 maxLines: 99,
                 decoration: InputDecoration(
@@ -805,7 +749,7 @@ class AddPageState extends State<AddPage>{
           Container(
             padding: EdgeInsets.only(bottom: 50.0),
             child : RaisedButton(
-              color: Color(0xFF91B3E7),
+              color: Theme.of(context).primaryColor,
               child: Text("Save", style: TextStyle(color: Colors.white),),
               onPressed: () {
                 Firestore.instance.collection(collection).document(_titleController.text).setData({

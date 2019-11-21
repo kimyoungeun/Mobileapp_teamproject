@@ -24,10 +24,12 @@ class SignInPageState extends State<SignInPage> {
       body: Center(
         child: Container(
           decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xFF91B3E7), Color(0x0091B3E7),])),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Theme.of(context).primaryColor, Theme.of(context).accentColor]
+            )
+          ),
           child: Column(
             children: <Widget>[
               SizedBox(height: 150,),
@@ -69,7 +71,7 @@ class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
             child: SizedBox(
               width: 250,
               child : RaisedButton(
-                color: Color(0xFF91B3E7),
+                color: Theme.of(context).primaryColor,
                 onPressed: () async {
                   _signInWithGoogle();
                   login = "google";
@@ -78,7 +80,7 @@ class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
                     MaterialPageRoute(builder: (context) => MyHomePage()),
                   );
                 },
-                child: const Text('GOOGLE', style: TextStyle(color: Colors.white),),
+                child: const Text('GOOGLE', style: TextStyle(color: Colors.white)),
               ),
             )
         ),
@@ -86,7 +88,6 @@ class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
     );
   }
 
-  // Example code of how to sign in with google.
   void _signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
@@ -95,8 +96,7 @@ class _GoogleSignInSectionState extends State<_GoogleSignInSection> {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    final FirebaseUser user =
-        (await _auth.signInWithCredential(credential)).user;
+    final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);
