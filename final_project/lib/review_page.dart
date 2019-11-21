@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'signin_page.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:uuid/uuid.dart';
 
 String person = "Director :    ";
 String collection;
@@ -118,7 +119,7 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
                   children: <Widget>[
                     FlatButton(
                       onPressed: () {
-                        Firestore.instance.collection(collection).document().delete();
+                        Firestore.instance.collection(collection).document(record.docuID).delete();
                       },
                       child: Container(
                           child: Text('DELETE', style: TextStyle(color: Theme.of(context).primaryColor))
@@ -248,6 +249,7 @@ class Record {
   final String note;
   final String uid;
   final DocumentReference reference;
+  final String docuID;
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['date'] != null),
@@ -256,12 +258,14 @@ class Record {
         assert(map['star'] != null),
         assert(map['note'] != null),
         assert(map['uid'] != null),
+        assert(map['docuID'] != null),
         date = map['date'],
         title = map['title'],
         author = map['author'],
         note = map['note'],
         uid = map['uid'],
-        star = map['star'];
+        star = map['star'],
+        docuID = map['docuID'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
@@ -365,7 +369,7 @@ class _DetailPageState extends State<DetailPage> {
     return Scaffold(
       appBar: new AppBar(
           backgroundColor: Theme.of(context).primaryColor,
-          title: new Text(detailTitle)
+          title: new Text(detailTitle, style: TextStyle(color: Colors.grey[700]))
       ),
       body: Column(
         children: <Widget>[
@@ -536,6 +540,8 @@ class AddPage extends StatefulWidget{
 }
 
 class AddPageState extends State<AddPage>{
+
+  var uuid = Uuid();
   DateTime _date = DateTime.now();
   String date = DateTime.now().toString().substring(0,10);
 
@@ -757,13 +763,15 @@ class AddPageState extends State<AddPage>{
               color: Theme.of(context).primaryColor,
               child: Text("Save", style: TextStyle(color: Colors.white),),
               onPressed: () {
-                Firestore.instance.collection(collection).document().setData({
+                String a = uuid.v1();
+                Firestore.instance.collection(collection).document(a).setData({
                   'date': date,
                   'title': _titleController.text,
                   'author': _authorController.text,
                   'star': rate2.toInt(),
                   'note': _noteController.text,
                   'uid': userID,
+                  'docuID': a
                 });
                 _dateController.clear();
                 _titleController.clear();

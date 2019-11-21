@@ -43,7 +43,7 @@ void createRecord(String to_do) async {
   await Firestore.instance.collection("todoList").document(to_do)
       .setData({
     'name' : to_do,
-    'id': userID,
+    'uid': userID,
     'date': selectedDate.substring(0,10),
     'todo': [to_do],
     'done': [],
@@ -93,7 +93,7 @@ class TodoListState extends State<TodoList> {
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('todoList').where('date', isEqualTo: selectedDate.substring(0,10)).where('id', isEqualTo: userID).snapshots(),
+      stream: Firestore.instance.collection('todoList').where('date', isEqualTo: selectedDate.substring(0,10)).where('uid', isEqualTo: userID).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
         return _buildList(context, snapshot.data.documents);
@@ -123,7 +123,7 @@ class TodoListState extends State<TodoList> {
                 onDismissed: (direction) {
                   var item = snapshot.elementAt(index);
                   final record1 = Record.fromSnapshot(snapshot[index]);
-                  if(record1.id == userID) {
+                  if(record1.uid == userID) {
                     Firestore.instance.collection("todoList").document(record1.name).delete();
                   }
                 },
@@ -206,7 +206,7 @@ class TodoListState extends State<TodoList> {
 
 class Record {
   final String name;
-  final String id;
+  final String uid;
   final String date;
   List todo = List<String>();
   List done = List<String>();
@@ -216,14 +216,14 @@ class Record {
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['name'] != null),
-        assert(map['id'] != null),
+        assert(map['uid'] != null),
         assert(map['date'] != null),
         assert(map['todo'] != null),
         assert(map['done'] != null),
         assert(map['notdone'] != null),
         assert(map['finish'] != null),
         name = map['name'],
-        id = map['id'],
+        uid = map['uid'],
         date = map['date'],
         todo = map['todo'],
         done = map['done'],
@@ -234,5 +234,5 @@ class Record {
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
-  String toString() => "Record<$name:$id:$date:$todo:$done:$notdone:$finish>";
+  String toString() => "Record<$name:$uid:$date:$todo:$done:$notdone:$finish>";
 }

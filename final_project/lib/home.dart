@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'todo_page.dart';
+import 'diary_page.dart';
+import 'travelogue_page.dart';
 import 'review_page.dart';
 
 String selectedDate = DateTime.now().toString();
@@ -79,23 +81,11 @@ class _MyHomePageState extends State<MyHomePage> {
           new Scaffold(
             body: TodoList(),
           ),
-          new Center(
-            child: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Icon(Icons.border_color),
-                new Text("Diary")
-              ],
-            ),
+          new Scaffold(
+            body: DiaryPage(),
           ),
-          new Center(
-            child: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Icon(Icons.directions_walk),
-                new Text("Travelogue")
-              ],
-            ),
+          new Scaffold(
+            body: TraveloguePage(),
           ),
           new Scaffold(
             body: ReviewPage(),
