@@ -7,6 +7,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 String person = "Director :    ";
 String collection;
 int _page = 0;
+String addText;
 
 Widget _buildstar(int num){
   return Container(
@@ -60,18 +61,22 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
 
         if(page == 0){
           person = "Director :   ";
+          addText = "    Add a movie review ... ";
           _page = 0;
         }
         else if(page == 1){
           person = "Author :   ";
+          addText = "    Add a book review ... ";
           _page = 1;
         }
         if(page == 2){
           person = "Author :   ";
+          addText = "    Add a exhibition review ... ";
           _page = 2;
         }
         else if(page == 3){
           person = "Artist :   ";
+          addText = "    Add a concert review ... ";
           _page = 3;
         }
 
@@ -163,7 +168,7 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
                       child: Row(
                         children: <Widget>[
                           Icon(Icons.add, color: Colors.white),
-                          Text("    Add  a  review ... ", style : TextStyle(fontSize: 18, color: Colors.white)),
+                          Text(addText, style : TextStyle(fontSize: 18, color: Colors.white)),
                         ],
                       )
                   ),

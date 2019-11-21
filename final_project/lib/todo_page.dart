@@ -78,7 +78,7 @@ class TodoListState extends State<TodoList> {
                     child: Row(
                       children: <Widget>[
                         Icon(Icons.add, color: Colors.white,),
-                        Text("    Add  a  to-do ... ", style : TextStyle(fontSize: 18, color: Colors.white)),
+                        Text("    Add a to-do ... ", style : TextStyle(fontSize: 18, color: Colors.white)),
                       ],
                     )
                 ),
