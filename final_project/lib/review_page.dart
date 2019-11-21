@@ -91,54 +91,54 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
     List<Card> _cards = reviews.map((product) {
       final record = Record.fromSnapshot(product);
       return Card(
-          clipBehavior: Clip.antiAlias,
-          child: Container(
-            padding: EdgeInsets.all(1.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                ListTile(
-                  leading: Text(record.date, style: TextStyle(fontSize: 15)),
-                  title: InkWell(
-                    child: Container(
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          padding: EdgeInsets.all(1.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              ListTile(
+                leading: Text(record.date, style: TextStyle(fontSize: 15)),
+                title: InkWell(
+                  child: Container(
                       padding: EdgeInsets.only(bottom: 10, top: 10),
                       child: Text(record.title, style: Theme.of(context).textTheme.title)
-                    ),
                   ),
-                  subtitle: Text(record.author, style: Theme.of(context).textTheme.subtitle),
+                ),
+                subtitle: Text(record.author, style: Theme.of(context).textTheme.subtitle),
 
-                ),
-                ButtonTheme.bar(
-                  child: ButtonBar(
-                    children: <Widget>[
-                      FlatButton(
-                        onPressed: () {
-                          Firestore.instance.collection(collection).document(record.title).delete();
-                        },
-                        child: Container(
+              ),
+              ButtonTheme.bar(
+                child: ButtonBar(
+                  children: <Widget>[
+                    FlatButton(
+                      onPressed: () {
+                        Firestore.instance.collection(collection).document().delete();
+                      },
+                      child: Container(
                           child: Text('DELETE', style: TextStyle(color: Theme.of(context).primaryColor))
-                        ),
                       ),
-                      FlatButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetailPage(record: record),
-                            ),
-                          );
-                        },
-                        child: Container(
-                            child: Text('MORE', style: TextStyle(color: Theme.of(context).primaryColor))
-                        ),
+                    ),
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailPage(record: record),
+                          ),
+                        );
+                      },
+                      child: Container(
+                          child: Text('MORE', style: TextStyle(color: Theme.of(context).primaryColor))
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
+        ),
+      );
     }).toList();
 
     return Scaffold(
@@ -151,7 +151,7 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
                   width: 370,
                   height: 40,
                   child : RaisedButton(
-                    color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).primaryColor,
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -196,41 +196,41 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-          title: TabBar(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        title: TabBar(
             unselectedLabelColor: Colors.white,
             labelColor: Colors.amber,
             tabs: [
-              new Tab(icon: new Icon(Icons.movie, color: Theme.of(context).primaryColor)),
-              new Tab(icon: new Icon(Icons.book, color: Theme.of(context).primaryColor)),
-              new Tab(icon: new Icon(Icons.wallpaper, color: Theme.of(context).primaryColor)),
-              new Tab(icon: new Icon(Icons.audiotrack, color: Theme.of(context).primaryColor))
+              new Tab(icon: new Icon(Icons.movie, color: Colors.grey[700])),
+              new Tab(icon: new Icon(Icons.book, color: Colors.grey[700])),
+              new Tab(icon: new Icon(Icons.wallpaper, color: Colors.grey[700])),
+              new Tab(icon: new Icon(Icons.audiotrack, color: Colors.grey[700]))
             ],
             controller: _tabController,
             indicatorColor: Colors.white,
             indicatorSize: TabBarIndicatorSize.tab
-          ),
-          bottomOpacity: 1,
-          ),
-        body: TabBarView(
-          children: [
-            new Center(
-              child: _buildBody(context, 0),
-            ),
-            new Center(
-              child: _buildBody(context, 1),
-            ),
-            new Center(
-              child: _buildBody(context, 2),
-            ),
-            new Center(
-              child: _buildBody(context, 3),
-            ),
-          ],
-          controller: _tabController,
         ),
+        bottomOpacity: 1,
+      ),
+      body: TabBarView(
+        children: [
+          new Center(
+            child: _buildBody(context, 0),
+          ),
+          new Center(
+            child: _buildBody(context, 1),
+          ),
+          new Center(
+            child: _buildBody(context, 2),
+          ),
+          new Center(
+            child: _buildBody(context, 3),
+          ),
+        ],
+        controller: _tabController,
+      ),
     );
   }
 }
@@ -752,7 +752,7 @@ class AddPageState extends State<AddPage>{
               color: Theme.of(context).primaryColor,
               child: Text("Save", style: TextStyle(color: Colors.white),),
               onPressed: () {
-                Firestore.instance.collection(collection).document(_titleController.text).setData({
+                Firestore.instance.collection(collection).document().setData({
                   'date': date,
                   'title': _titleController.text,
                   'author': _authorController.text,
