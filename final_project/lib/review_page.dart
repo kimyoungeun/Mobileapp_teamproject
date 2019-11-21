@@ -5,6 +5,8 @@ import 'signin_page.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 String person = "Director :    ";
+String collection;
+int _page = 0;
 
 Widget _buildstar(int num){
   return Container(
@@ -29,8 +31,6 @@ Widget _buildstar(int num){
   );
 }
 
-
-
 class ReviewPage extends StatefulWidget {
   @override
   _ReviewPageState createState() {
@@ -38,15 +38,13 @@ class ReviewPage extends StatefulWidget {
   }
 }
 
-class _ReviewPageState extends State<ReviewPage> {
-  int _page = 0;
-  PageController _c;
+class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateMixin {
+  TabController _tabController;
 
   @override
   void initState() {
-    _c = new PageController(
-      initialPage: _page,
-    );
+    _tabController = new TabController(length: 4, vsync: this);
+    super.initState();
   }
 
   Widget _buildBody(BuildContext context, int page) {
@@ -56,9 +54,26 @@ class _ReviewPageState extends State<ReviewPage> {
     if(page == 2) collection = "exhibition_review";
     if(page == 3) collection = "concert_review";
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection(collection).snapshots(),
+      stream: Firestore.instance.collection(collection).where('uid', isEqualTo: userID).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
+
+        if(page == 0){
+          person = "Director :   ";
+          _page = 0;
+        }
+        else if(page == 1){
+          person = "Author :   ";
+          _page = 1;
+        }
+        if(page == 2){
+          person = "Author :   ";
+          _page = 2;
+        }
+        else if(page == 3){
+          person = "Artist :   ";
+          _page = 3;
+        }
 
         return
           _buildListCard(context, snapshot.data.documents);
@@ -83,7 +98,7 @@ class _ReviewPageState extends State<ReviewPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Container(
-                  width:90,
+                  width:95,
                   padding: EdgeInsets.only(left : 4.0),
                   child: Center(
                     child: Text(
@@ -138,8 +153,6 @@ class _ReviewPageState extends State<ReviewPage> {
                                       ],),
                                     SizedBox(height: 5),
                                     _buildstar(record.star),
-
-
                                   ],
                                 ),
                               )
@@ -147,6 +160,21 @@ class _ReviewPageState extends State<ReviewPage> {
                         ),
                       ],
                     ),
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {
+                        Firestore.instance.collection(collection).document(record.title).delete();
+                      },
+                      child: Container(
+                          padding: EdgeInsets.only(left: 40.0),
+                          alignment: Alignment.bottomLeft,
+                          child: Icon(Icons.clear)
+                      ),
+                    ),
+                    SizedBox(height: 45),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -159,13 +187,11 @@ class _ReviewPageState extends State<ReviewPage> {
                       child: Container(
                           padding: EdgeInsets.only(left: 40.0),
                           alignment: Alignment.bottomLeft,
-                          child:
-//                      Text('more',
-//                        style: TextStyle(fontSize: 14, color: Colors.blue),
-//                        textAlign: TextAlign.right,),
-                          Icon(Icons.arrow_forward,)
+                          child: Icon(Icons.arrow_forward)
                       ),
-                    )],),
+                    )
+                  ],
+                ),
               ],
             ),
           ),
@@ -173,48 +199,54 @@ class _ReviewPageState extends State<ReviewPage> {
     }).toList();
 
     return Scaffold(
-        body: Stack(
+        body: Column(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 50.0),
-              child: Center(
-                child: OrientationBuilder(
-                  builder: (context, orientation) {
-                    return GridView.count(
-                      crossAxisCount: orientation == Orientation.portrait ? 1 : 1,
-                      mainAxisSpacing: 24.0,
-                      padding: EdgeInsets.all(16.0),
-                      childAspectRatio: 8.0 / 2.5,
-                      children:
-                      _cards,
-                    );
-                  },
+            Expanded(
+              flex: 5,
+              child: Padding(
+                padding: EdgeInsets.only(top: 30.0),
+                child: Center(
+                  child: OrientationBuilder(
+                    builder: (context, orientation) {
+                      return GridView.count(
+                        crossAxisCount: orientation == Orientation.portrait ? 1 : 1,
+                        mainAxisSpacing: 25.0,
+                        padding: EdgeInsets.all(16.0),
+                        childAspectRatio: 8.0 / 2.5,
+                        children:
+                        _cards,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget> [
-                Container(
-                  margin: EdgeInsets.only(left: 180, bottom: 50),
-                  child: FittedBox(
-                    child: Center(
-                      child : FloatingActionButton(
-                        backgroundColor: Color(0xFF91B3E7),
-                        child: new Icon(Icons.add),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddPage(page: _page),
-                            ),
-                          );
-                        },
-                      ),),
+            Expanded(
+              flex: 1,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget> [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 30),
+                    child: FittedBox(
+                      child: Center(
+                        child : FloatingActionButton(
+                          backgroundColor: Color(0xFF91B3E7),
+                          child: new Icon(Icons.add),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddPage(page: _page),
+                              ),
+                            );
+                          },
+                        ),),
+                    ),
                   ),
-                ),
-              ],
-            )
+                ],
+              ),
+            ),
           ],
         )
     );
@@ -223,51 +255,41 @@ class _ReviewPageState extends State<ReviewPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Color(0xFF91B3E7),
-          title: new Text('Review Note')
-      ),
-      bottomNavigationBar: new BottomNavigationBar(
-        currentIndex: _page,
-        onTap: (index){
-          this._c.animateToPage(index,duration: const Duration(milliseconds: 500),curve: Curves.easeInOut);
-        },
-        type: BottomNavigationBarType.fixed,
-        items: <BottomNavigationBarItem>[
-          new BottomNavigationBarItem(icon: Icon(Icons.movie), title: new Text("Movie")),
-          new BottomNavigationBarItem(icon: Icon(Icons.book),title: new Text("Book")),
-          new BottomNavigationBarItem(icon: Icon(Icons.wallpaper),title: new Text("Exhibition")),
-          new BottomNavigationBarItem(icon: Icon(Icons.audiotrack),title: new Text("Concert")),
-        ],
-      ),
-      body: new PageView(
-        controller: _c,
-        onPageChanged: (newPage){
-          setState((){
-            this._page=newPage;
-            if(newPage == 0){
-              person = "Director :   ";
-            }
-            else if(newPage == 1){
-              person = "Author :   ";
-            }
-          });
-        },
-        children: <Widget>[
-          new Center(
-            child: _buildBody(context, _page),
+          title: TabBar(
+            unselectedLabelColor: Colors.white,
+            labelColor: Colors.amber,
+            tabs: [
+              new Tab(icon: new Icon(Icons.movie)),
+              new Tab(icon: new Icon(Icons.book),),
+              new Tab(icon: new Icon(Icons.wallpaper),),
+              new Tab(icon: new Icon(Icons.audiotrack),)
+            ],
+            controller: _tabController,
+            indicatorColor: Colors.white,
+            indicatorSize: TabBarIndicatorSize.tab
           ),
-          new Center(
-            child: _buildBody(context, _page),
+          bottomOpacity: 1,
           ),
-          new Center(
-            child: _buildBody(context, _page),
-          ),
-          new Center(
-            child: _buildBody(context, _page),
-          ),
-        ],
-      ),
+        body: TabBarView(
+          children: [
+            new Center(
+              child: _buildBody(context, 0),
+            ),
+            new Center(
+              child: _buildBody(context, 1),
+            ),
+            new Center(
+              child: _buildBody(context, 2),
+            ),
+            new Center(
+              child: _buildBody(context, 3),
+            ),
+          ],
+          controller: _tabController,
+        ),
     );
   }
 }
@@ -376,10 +398,28 @@ class _DetailPageState extends State<DetailPage> {
     _noteController.text = widget.record.note;
     double rate = widget.record.star.toDouble();
 
+    String detailTitle;
+    if(_page == 0){
+      detailTitle = "Movie Review";
+      _page = 0;
+    }
+    else if(_page == 1){
+      detailTitle = "Book Review";
+      _page = 1;
+    }
+    if(_page == 2){
+      detailTitle = "Exhibition Review";
+      _page = 2;
+    }
+    else if(_page == 3){
+      detailTitle = "Concert Review";
+      _page = 3;
+    }
+
     return Scaffold(
       appBar: new AppBar(
           backgroundColor: Color(0xFF91B3E7),
-          title: new Text('Review Note')
+          title: new Text(detailTitle)
       ),
       body: Column(
         children: <Widget>[
@@ -500,7 +540,6 @@ class _DetailPageState extends State<DetailPage> {
               ),
               margin: EdgeInsets.all(15.0),
               child: TextField(
-
                 controller: _noteController,
                 maxLines: 99,
                 decoration: InputDecoration(
@@ -542,7 +581,6 @@ class AddPage extends StatefulWidget{
 
   AddPage({Key key, @required this.page}) : super(key: key);
 
-
   @override
   AddPageState createState() {
     return AddPageState();
@@ -550,7 +588,6 @@ class AddPage extends StatefulWidget{
 }
 
 class AddPageState extends State<AddPage>{
-
   DateTime _date = DateTime.now();
   String date = DateTime.now().toString().substring(0,10);
 
@@ -606,20 +643,36 @@ class AddPageState extends State<AddPage>{
 
   @override
   Widget build(BuildContext context) {
-    String collection;
+    String detailTitle;
+    if(_page == 0){
+      detailTitle = "Movie Review";
+      _page = 0;
+    }
+    else if(_page == 1){
+      detailTitle = "Book Review";
+      _page = 1;
+    }
+    if(_page == 2){
+      detailTitle = "Exhibition Review";
+      _page = 2;
+    }
+    else if(_page == 3){
+      detailTitle = "Concert Review";
+      _page = 3;
+    }
+
     if(widget.page == 0) collection = "movie_review";
     if(widget.page == 1) collection = "book_review";
     if(widget.page == 2) collection = "exhibition_review";
     if(widget.page == 3) collection = "concert_review";
     double rate2;
+
     return Scaffold(
       appBar: new AppBar(
           backgroundColor: Color(0xFF91B3E7),
-          title: new Text('Review Note')
+          title: new Text(detailTitle)
       ),
-      body:
-
-      Column(
+      body: Column(
         children: <Widget>[
           SizedBox(height: 20.0,),
           Row(
@@ -755,7 +808,7 @@ class AddPageState extends State<AddPage>{
               color: Color(0xFF91B3E7),
               child: Text("Save", style: TextStyle(color: Colors.white),),
               onPressed: () {
-                Firestore.instance.collection(collection).add({
+                Firestore.instance.collection(collection).document(_titleController.text).setData({
                   'date': date,
                   'title': _titleController.text,
                   'author': _authorController.text,
@@ -770,7 +823,8 @@ class AddPageState extends State<AddPage>{
                 _noteController.clear();
                 Navigator.of(context).pop();
               },
-            ),),
+            ),
+          ),
         ],
       ),
     );

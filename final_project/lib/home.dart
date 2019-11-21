@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
           new BottomNavigationBarItem(icon: new Icon(Icons.list), title: new Text("To do List")),
           new BottomNavigationBarItem(icon: new Icon(Icons.border_color), title: new Text("Diary")),
           new BottomNavigationBarItem(icon: new Icon(Icons.directions_walk), title: new Text("Travelogue")),
-          new BottomNavigationBarItem(icon: new Icon(Icons.star), title: new Text("Review Note")),
+          new BottomNavigationBarItem(icon: new Icon(Icons.star), title: new Text("Review")),
         ],
       ),
       body: new PageView(
@@ -77,22 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
-          new Center(
-            child: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new IconButton(
-                  icon: Icon(Icons.list),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => TodoList()),
-                    );
-                  },
-                ),
-                new Text("To do List")
-              ],
-            ),
+          new Scaffold(
+            body: TodoList(),
           ),
           new Center(
             child: new Column(
@@ -112,23 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
-          new Center(
-            child: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                //new Icon(Icons.star),
-                new IconButton(
-                  icon: Icon(Icons.star),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ReviewPage()),
-                    );
-                  },
-                ),
-                new Text("Review Note")
-              ],
-            ),
+          new Scaffold(
+            body: ReviewPage(),
           ),
         ],
       ),
