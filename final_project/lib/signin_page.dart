@@ -21,33 +21,33 @@ class SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Theme.of(context).primaryColor, Theme.of(context).accentColor]
+        body: Center(
+            child: Container(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Theme.of(context).primaryColor, Theme.of(context).accentColor]
+                  )
+              ),
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 150,),
+                  Center(child: Text("매" , style: TextStyle(fontSize: 18, color: Colors.white),)),
+                  SizedBox(height: 20,),
+                  Center(child: Text("일", style: TextStyle(fontSize: 18, color: Colors.white),)),
+                  SizedBox(height: 20,),
+                  Center(child: Text("의", style: TextStyle(fontSize: 18, color: Colors.white),)),
+                  SizedBox(height: 50,),
+                  Center(child: Text("일", style: TextStyle(fontSize: 18, color: Colors.white),)),
+                  SizedBox(height: 20,),
+                  Center(child: Text("상", style: TextStyle(fontSize: 18, color: Colors.white),)),
+                  SizedBox(height: 320,),
+                  _GoogleSignInSection(),
+                ],
+              ),
             )
-          ),
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: 150,),
-              Center(child: Text("매" , style: TextStyle(fontSize: 18, color: Colors.white),)),
-              SizedBox(height: 20,),
-              Center(child: Text("일", style: TextStyle(fontSize: 18, color: Colors.white),)),
-              SizedBox(height: 20,),
-              Center(child: Text("의", style: TextStyle(fontSize: 18, color: Colors.white),)),
-              SizedBox(height: 50,),
-              Center(child: Text("일", style: TextStyle(fontSize: 18, color: Colors.white),)),
-              SizedBox(height: 20,),
-              Center(child: Text("상", style: TextStyle(fontSize: 18, color: Colors.white),)),
-              SizedBox(height: 320,),
-              _GoogleSignInSection(),
-            ],
-          ),
         )
-      )
     );
   }
 }

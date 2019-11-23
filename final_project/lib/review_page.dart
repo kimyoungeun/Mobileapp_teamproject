@@ -45,8 +45,8 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
 
   @override
   void initState() {
-    _tabController = new TabController(length: 4, vsync: this);
     super.initState();
+    _tabController = new TabController(length: 4, vsync: this);
   }
 
   Widget _buildBody(BuildContext context, int page) {
@@ -98,19 +98,21 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
       final record = Record.fromSnapshot(product);
       return Card(
         clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        elevation: 5,
         child: Container(
           padding: EdgeInsets.all(1.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               ListTile(
-                leading: Text(record.date, style: TextStyle(fontSize: 15)),
-                title: InkWell(
-                  child: Container(
-                      padding: EdgeInsets.only(bottom: 10, top: 10),
-                      child: Text(record.title, style: Theme.of(context).textTheme.title)
-                  ),
-                ),
+                leading: Container(
+                  child : Text(record.date.substring(8,10), style: TextStyle(fontSize: 40, color: Theme.of(context).primaryColor)),),
+                title: Container(
+                  padding: EdgeInsets.only(top : 10, bottom : 10),
+                  child :Text(record.title, style: Theme.of(context).textTheme.title),),
                 subtitle: Text(record.author, style: Theme.of(context).textTheme.subtitle),
 
               ),
@@ -148,6 +150,7 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
     }).toList();
 
     return Scaffold(
+        backgroundColor: Theme.of(context).accentColor,
         body: Column(
           children: <Widget>[
             Container(
@@ -206,16 +209,16 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title: TabBar(
+            controller: _tabController,
             unselectedLabelColor: Colors.white,
             labelColor: Colors.amber,
             tabs: [
               new Tab(icon: new Icon(Icons.movie, color: Colors.grey[700])),
               new Tab(icon: new Icon(Icons.book, color: Colors.grey[700])),
               new Tab(icon: new Icon(Icons.wallpaper, color: Colors.grey[700])),
-              new Tab(icon: new Icon(Icons.audiotrack, color: Colors.grey[700]))
+              new Tab(icon: new Icon(Icons.audiotrack, color: Colors.grey[700])),
             ],
-            controller: _tabController,
-            indicatorColor: Colors.white,
+            indicatorColor: Theme.of(context).primaryColor,
             indicatorSize: TabBarIndicatorSize.tab
         ),
         bottomOpacity: 1,
@@ -369,7 +372,7 @@ class _DetailPageState extends State<DetailPage> {
     return Scaffold(
       appBar: new AppBar(
           backgroundColor: Theme.of(context).primaryColor,
-          title: new Text(detailTitle, style: TextStyle(color: Colors.grey[700]))
+          title: new Text(detailTitle, style: TextStyle(color: Colors.white))
       ),
       body: Column(
         children: <Widget>[
@@ -382,7 +385,7 @@ class _DetailPageState extends State<DetailPage> {
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
+                    //border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center( child : Text('Date', textAlign: TextAlign.center , style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
                 ),
@@ -401,7 +404,7 @@ class _DetailPageState extends State<DetailPage> {
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFF91B3E7), width: 2.5),
+                    //border: Border.all(color: Color(0xFF91B3E7), width: 2.5),
                   ),
                   child: Center(
                     child : Text('Title', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),
@@ -430,7 +433,7 @@ class _DetailPageState extends State<DetailPage> {
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
+                    //border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center(child : Text('Director', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
                 ),
@@ -457,7 +460,7 @@ class _DetailPageState extends State<DetailPage> {
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
+                    //border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center( child : Text('Rating', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
                 ),
@@ -623,8 +626,8 @@ class AddPageState extends State<AddPage>{
 
     return Scaffold(
       appBar: new AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-          title: new Text(detailTitle)
+        backgroundColor: Theme.of(context).primaryColor,
+        title: new Text(detailTitle, style: TextStyle(color: Colors.white),),
       ),
       body: Column(
         children: <Widget>[
@@ -637,7 +640,7 @@ class AddPageState extends State<AddPage>{
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
+                    //border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center(
                     child : Text('Date', textAlign: TextAlign.center , style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),
@@ -658,7 +661,7 @@ class AddPageState extends State<AddPage>{
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
+                    //border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center( child : Text('Title', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0),),),
                 ),
@@ -686,7 +689,7 @@ class AddPageState extends State<AddPage>{
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
+                    //border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center(child : Text('Director', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
                 ),
@@ -714,7 +717,7 @@ class AddPageState extends State<AddPage>{
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
+                    //border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center( child : Text('Rating', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
                 ),

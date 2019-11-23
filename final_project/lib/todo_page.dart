@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'signin_page.dart';
 import 'home.dart';
+import 'package:uuid/uuid.dart';
+
+var uuid = Uuid();
+String a;
 
 Future<String> _asyncInputDialog(BuildContext context) async {
   String to_do = '';
@@ -26,6 +30,7 @@ Future<String> _asyncInputDialog(BuildContext context) async {
           FlatButton(
             child: Text('ADD'),
             onPressed: () {
+              a = uuid.v4();
               if(to_do != '')
                 createRecord(to_do);
               Navigator.of(context).pop();
@@ -40,17 +45,16 @@ Future<String> _asyncInputDialog(BuildContext context) async {
 void createRecord(String to_do) async {
   final databaseReference = Firestore.instance;
 
-  await Firestore.instance.collection("todoList").document(to_do)
+  await Firestore.instance.collection("todoList").document(a)
       .setData({
     'name' : to_do,
     'uid': userID,
     'date': selectedDate.substring(0,10),
-    'todo': [to_do],
-    'done': [],
-    'notdone': [to_do],
-    'finish': 0
+    'finish': 0,
+    'docuID': a
   });
 }
+
 
 class TodoList extends StatefulWidget {
   @override
@@ -60,17 +64,20 @@ class TodoList extends StatefulWidget {
 class TodoListState extends State<TodoList> {
   Widget build(BuildContext context) {
     return new Scaffold(
+      backgroundColor: Theme.of(context).accentColor,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        title: Text(selectedDate.substring(0,10), style: TextStyle(color: Colors.grey[700])),
+        bottomOpacity: 1,
+      ),
       body: Column(
         children: <Widget>[
           Container(
-            margin: EdgeInsets.only(top: 170, left: 250),
-            child: Text(selectedDate.substring(0,10), style: TextStyle(color: Colors.grey[800], fontSize: 18, fontWeight: FontWeight.bold)),
-          ),
-          Container(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              padding: const EdgeInsets.only(top: 30),
               alignment: Alignment.center,
               child: SizedBox(
-                width: 350,
+                width: 370,
                 height: 40,
                 child : RaisedButton(
                     color: Theme.of(context).primaryColor,
@@ -85,7 +92,6 @@ class TodoListState extends State<TodoList> {
               )
           ),
           _buildBody(context),
-          SizedBox(height: 100),
         ],
       ),
     );
@@ -109,9 +115,8 @@ class TodoListState extends State<TodoList> {
 
     return Expanded(
       child: Container(
-          padding: EdgeInsets.only(top: 0, bottom: 30, left: 10, right: 10), //for text
+          padding: EdgeInsets.only(top: 20, bottom: 30, left: 10, right: 10), //for text
           child: ListView.builder(
-            padding: EdgeInsets.all(0),
             itemCount: snapshot.length,
             itemBuilder: (context, index) {
               return Dismissible(
@@ -124,7 +129,7 @@ class TodoListState extends State<TodoList> {
                   var item = snapshot.elementAt(index);
                   final record1 = Record.fromSnapshot(snapshot[index]);
                   if(record1.uid == userID) {
-                    Firestore.instance.collection("todoList").document(record1.name).delete();
+                    Firestore.instance.collection("todoList").document(record1.docuID).delete();
                   }
                 },
               );
@@ -144,62 +149,66 @@ class TodoListState extends State<TodoList> {
     return Padding(
       key: ValueKey(record.name),
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1.0),
-      child: Container(
-        width: 400,
-        child: Column(
-          children: <Widget>[
-            ListTile(
-              title: Container(
-                  padding: EdgeInsets.only(left:30),
-                  child : Row(
-                    children: <Widget>[
-                      Container(
-                        width: 140,
-                        child : alreadySaved? new RichText(
-                          text: new TextSpan(
-                            text: record.name,
-                            style: new TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                              decoration: TextDecoration.lineThrough,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child : Container(
+          width: 370,
+          child: Column(
+            children: <Widget>[
+              ListTile(
+                title: Container(
+                    padding: EdgeInsets.only(left:30),
+                    child : Row(
+                      children: <Widget>[
+                        Container(
+                          width: 140,
+                          child : alreadySaved? new RichText(
+                            text: new TextSpan(
+                              text: record.name,
+                              style: new TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                          ) : Text(record.name, style: TextStyle(fontSize: 18)),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(left:100),
+                          child : FittedBox(
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: <Widget>[
+                                    IconButton(
+                                        icon: Icon(Icons.check,
+                                          color: alreadySaved ? Theme.of(context).primaryColor : Colors.grey[700],
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            if (alreadySaved) {
+                                              record.reference.updateData({'finish': 0});
+                                            } else {
+                                              record.reference.updateData({'finish': 1});
+                                            }
+                                          });
+                                        }
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                        ) : Text(record.name, style: TextStyle(fontSize: 20)),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(left:120),
-                        child : FittedBox(
-                          child: Column(
-                            children: [
-                              Row(
-                                children: <Widget>[
-                                  IconButton(
-                                      icon: Icon(Icons.check,
-                                        color: alreadySaved ? Theme.of(context).primaryColor : Colors.grey[700],
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          if (alreadySaved) {
-                                            record.reference.updateData({'done': FieldValue.arrayRemove([record.name]), 'notdone': FieldValue.arrayUnion([record.name]), 'finish': 0});
-                                          } else {
-                                            record.reference.updateData({'notdone': FieldValue.arrayRemove([record.name]), 'done': FieldValue.arrayUnion([record.name]), 'finish': 1});
-                                          }
-                                        });
-                                      }
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
                         ),
-                      ),
-                    ],
-                  )
+                      ],
+                    )
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        ),),
     );
   }
 }
@@ -208,31 +217,25 @@ class Record {
   final String name;
   final String uid;
   final String date;
-  List todo = List<String>();
-  List done = List<String>();
-  List notdone = List<String>();
   final DocumentReference reference;
   final int finish;
+  final String docuID;
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['name'] != null),
         assert(map['uid'] != null),
         assert(map['date'] != null),
-        assert(map['todo'] != null),
-        assert(map['done'] != null),
-        assert(map['notdone'] != null),
         assert(map['finish'] != null),
+        assert(map['docuID'] != null),
         name = map['name'],
         uid = map['uid'],
         date = map['date'],
-        todo = map['todo'],
-        done = map['done'],
-        notdone = map['notdone'],
-        finish = map['finish'];
+        finish = map['finish'],
+        docuID = map['docuID'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
-  String toString() => "Record<$name:$uid:$date:$todo:$done:$notdone:$finish>";
+  String toString() => "Record<$name:$uid:$date:$finish:$docuID>";
 }

@@ -9,7 +9,7 @@ class ShrineApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Color(0xFF91B3E7),
-        accentColor: Color(0x0091B3E7),
+        accentColor: Color(0x2291B3E7),
 
         fontFamily: 'Montserrat',
 
