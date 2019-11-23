@@ -256,7 +256,7 @@ class AddPageState extends State<AddPage>{
             padding: EdgeInsets.only(bottom: 50.0),
             child : RaisedButton(
               color: Theme.of(context).primaryColor,
-              child: Text("Save", style: TextStyle(color: Colors.white),),
+              child: Text("SAVE", style: TextStyle(color: Colors.white),),
               onPressed: () {
                 String a = uuid.v4();
                 Firestore.instance.collection('diary').document(a).setData({
@@ -331,7 +331,7 @@ class _DetailPageState extends State<DetailPage> {
                 controller: _noteController,
                 maxLines: 99,
                 decoration: InputDecoration(
-                  hintText: "Comment!",
+                  hintText: "Comment",
                   contentPadding: const EdgeInsets.all(20.0),
                 ),
               ),
@@ -341,7 +341,7 @@ class _DetailPageState extends State<DetailPage> {
             padding: EdgeInsets.only(bottom: 50.0),
             child : RaisedButton(
               color: Theme.of(context).primaryColor,
-              child: Text("Save", style: TextStyle(color: Colors.white),),
+              child: Text("SAVE", style: TextStyle(color: Colors.white),),
               onPressed: () {
                 widget.record.reference.updateData({
                   'note': _noteController.text,

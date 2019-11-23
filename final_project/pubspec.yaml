@@ -57,4 +57,4 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/diamond.png
+    - assets/default.jpg
