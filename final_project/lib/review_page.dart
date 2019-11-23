@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'signin_page.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:uuid/uuid.dart';
+import 'home.dart';
 
 String person = "Director :    ";
 String collection;
@@ -56,7 +57,7 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
     if(page == 2) collection = "exhibition_review";
     if(page == 3) collection = "concert_review";
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection(collection).where('uid', isEqualTo: userID).snapshots(),
+      stream: Firestore.instance.collection(collection).where('month', isEqualTo: selectedDate.substring(0,7)).where('uid', isEqualTo: userID).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
@@ -253,6 +254,7 @@ class Record {
   final String uid;
   final DocumentReference reference;
   final String docuID;
+  final String month;
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['date'] != null),
@@ -262,13 +264,15 @@ class Record {
         assert(map['note'] != null),
         assert(map['uid'] != null),
         assert(map['docuID'] != null),
+        assert(map['month'] != null),
         date = map['date'],
         title = map['title'],
         author = map['author'],
         note = map['note'],
         uid = map['uid'],
         star = map['star'],
-        docuID = map['docuID'];
+        docuID = map['docuID'],
+        month = map['month'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
@@ -774,7 +778,8 @@ class AddPageState extends State<AddPage>{
                   'star': rate2.toInt(),
                   'note': _noteController.text,
                   'uid': userID,
-                  'docuID': a
+                  'docuID': a,
+                  'month': selectedDate.substring(0,7),
                 });
                 _dateController.clear();
                 _titleController.clear();
