@@ -246,7 +246,7 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
 }
 
 class Record {
-  final String date;
+  String date;
   final String title;
   final String author;
   final int star;
@@ -308,6 +308,7 @@ class _DetailPageState extends State<DetailPage> {
       setState(() {
         date = picked.toString().substring(0,10);
         _date = picked;
+        widget.record.date = date;
       });
     }
   }
@@ -315,14 +316,6 @@ class _DetailPageState extends State<DetailPage> {
   Widget _datepicker() {
     return Row(
       children: <Widget>[
-        Expanded (
-          flex: 1,
-          child: Column(
-            children: <Widget>[
-              Text(date),
-            ],
-          ),
-        ),
         Expanded (
           flex: 1,
           child: Column(
@@ -384,7 +377,7 @@ class _DetailPageState extends State<DetailPage> {
           Row(
             children: <Widget>[
               Expanded(
-                flex: 1,
+                flex: 2,
                 child: Container(
                   margin: EdgeInsets.fromLTRB(24.0, 10.0, 30.0, 10.0),
                   width: 80, height: 30,
@@ -392,6 +385,17 @@ class _DetailPageState extends State<DetailPage> {
                     //border: Border.all(color: Theme.of(context).primaryColor, width: 2.5),
                   ),
                   child: Center( child : Text('Date', textAlign: TextAlign.center , style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),),
+                ),
+              ),
+              Expanded (
+                flex: 2,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.only(left: 10.0),
+                      child: Text(widget.record.date),
+                    ),
+                  ]
                 ),
               ),
               Expanded(
@@ -478,16 +482,19 @@ class _DetailPageState extends State<DetailPage> {
 //                    filled: true,
 //                  ),
 //                ),
-                FlutterRatingBar(
-                  initialRating: rate,
-                  itemSize: 30.0,
-                  fillColor: Theme.of(context).primaryColor,
-                  borderColor: Theme.of(context).primaryColor,
-                  allowHalfRating: false,
-                  onRatingUpdate: (rating) {
-                    rate = rating;
-                    print(rating);
-                  },
+                Container(
+                  padding: EdgeInsets.only(left: 30.0),
+                  child: FlutterRatingBar(
+                    initialRating: rate,
+                    itemSize: 30.0,
+                    fillColor: Theme.of(context).primaryColor,
+                    borderColor: Theme.of(context).primaryColor,
+                    allowHalfRating: false,
+                    onRatingUpdate: (rating) {
+                      rate = rating;
+                      print(rating);
+                    },
+                  ),
                 ),
               ),
             ],
@@ -502,7 +509,7 @@ class _DetailPageState extends State<DetailPage> {
                 controller: _noteController,
                 maxLines: 99,
                 decoration: InputDecoration(
-                  hintText: "Comment!",
+                  hintText: "Comment",
                   contentPadding: const EdgeInsets.all(20.0),
                 ),
               ),
