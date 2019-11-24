@@ -480,10 +480,6 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
       initialPage: _page,
     );
     super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     _noteController.text = widget.record.note;
     _noteController2.text = widget.record.note2;
     _noteController3.text = widget.record.note3;
@@ -491,6 +487,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     _noteController5.text = widget.record.note5;
     _noteController6.text = widget.record.note6;
     _noteController7.text = widget.record.note7;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     String travelDay = (widget.record.startdate) + " ~ " + (widget.record.lastdate);
 
     return Scaffold(
