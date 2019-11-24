@@ -227,6 +227,7 @@ class AddPageState extends State<AddPage>{
             ),
             margin: EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
             child: TextField(
+              style: TextStyle(fontSize: 20),
               controller: _noteTitleController,
               maxLines: 1,
               decoration: InputDecoration(
@@ -312,6 +313,7 @@ class _DetailPageState extends State<DetailPage> {
             ),
             margin: EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
             child: TextField(
+              style: TextStyle(fontSize: 20),
               controller: _noteTitleController,
               maxLines: 1,
               decoration: InputDecoration(

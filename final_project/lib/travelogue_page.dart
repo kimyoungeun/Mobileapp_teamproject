@@ -6,7 +6,6 @@ import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
-import 'package:path/path.dart';
 
 File _image;
 
@@ -14,14 +13,19 @@ String startday = "";
 String lastday = "";
 int difference = 0;
 
-Future<String> _asyncInputDialog(BuildContext context) async {
+class AddPage extends StatefulWidget{
+  @override
+  AddPageState createState() {
+    return AddPageState();
+  }
+}
+
+class AddPageState extends State<AddPage>{
 
   var uuid = Uuid();
   DateTime _date = DateTime.now();
   String date1 = DateTime.now().toString().substring(0,10);
   String date2 = DateTime.now().toString().substring(0,10);
-
-  final _placeController = TextEditingController();
 
   Future<Null> _selectDate1(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -32,9 +36,11 @@ Future<String> _asyncInputDialog(BuildContext context) async {
     );
 
     if(picked != null && picked != _date){
+      setState(() {
         date1 = picked.toString().substring(0,10);
         startday = date1;
         _date = picked;
+      });
     }
   }
 
@@ -47,9 +53,11 @@ Future<String> _asyncInputDialog(BuildContext context) async {
     );
 
     if(picked != null && picked != _date){
+      setState(() {
         date2 = picked.toString().substring(0,10);
         lastday = date2;
         _date = picked;
+      });
     }
   }
 
@@ -60,7 +68,7 @@ Future<String> _asyncInputDialog(BuildContext context) async {
           flex: 2,
           child: Column(
             children: <Widget>[
-              Text(date1),
+              Text(date1,),
             ],
           ),
         ),
@@ -69,7 +77,7 @@ Future<String> _asyncInputDialog(BuildContext context) async {
           child: Column(
             children: <Widget>[
               IconButton(
-                icon: Icon(Icons.calendar_today, color: Theme.of(context).primaryColor),
+                icon: Icon(Icons.calendar_today, color: Color(0xFF91B3E7)),
                 onPressed: (){
                   _selectDate1(context);
                 },
@@ -88,7 +96,7 @@ Future<String> _asyncInputDialog(BuildContext context) async {
           flex: 2,
           child: Column(
             children: <Widget>[
-              Text(date2),
+              Text(date2,),
             ],
           ),
         ),
@@ -97,7 +105,7 @@ Future<String> _asyncInputDialog(BuildContext context) async {
           child: Column(
             children: <Widget>[
               IconButton(
-                icon: Icon(Icons.calendar_today, color: Theme.of(context).primaryColor),
+                icon: Icon(Icons.calendar_today, color: Color(0xFF91B3E7)),
                 onPressed: (){
                   _selectDate2(context);
                 },
@@ -109,107 +117,118 @@ Future<String> _asyncInputDialog(BuildContext context) async {
     );
   }
 
-  return showDialog<String>(
-    context: context,
-    barrierDismissible: false, // dialog is dismissible with a tap on the barrier
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: new Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            new Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    width: 100, height: 30,
-                    child: Center(
-                      child : Text('Start Date', textAlign: TextAlign.center , style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child : Container(
-                    child: _datepicker1(),
-                  ),
-                ),
-              ],
-            ),
-            new Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    width: 100, height: 30,
-                    decoration: BoxDecoration(
-                    ),
-                    child: Center(
-                      child : Text('Last Date', textAlign: TextAlign.center , style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),
-                    ),
-                  ),
-                ),
-                Expanded(
-                    child : Container(
-                      child: _datepicker2(),
-                    )
-                ),
-              ],
-            ),
-            new Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    width: 100, height: 50,
-                    decoration: BoxDecoration(
-                    ),
-                    child: Center( child : Text('Place', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0),),),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    child : TextField(
-                      controller: _placeController,
-                      decoration: InputDecoration.collapsed(
-                        fillColor: Colors.grey[50],
-                        hintText: 'place',
-                        filled: true,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('ADD'),
-            onPressed: () {
-              if(_placeController.text != ""){
-                startday = date1.substring(0,10);
-                lastday = date2.substring(0,10);
-                difference = int.parse(lastday.substring(8,10)) - int.parse(startday.substring(8,10));
-                print(difference);
+  final _placeController = TextEditingController();
 
-                String a = uuid.v4();
-                Firestore.instance.collection('travelogue').document(a).setData({
-                  'startdate': date1.substring(0,10),
-                  'lastdate': date2.substring(0,10),
-                  'month': date1.substring(0,7),
-                  'place' : _placeController.text,
-                  'uid': userID,
-                  'docuID': a,
-                  'day': difference,
-                  'note': "",
-                  'url': 'assets/default.jpg'
-                });
-              }
-              Navigator.of(context).pop();
-              _image = null;
-            },
+  @override
+  Widget build(BuildContext context) {
+    var uuid = Uuid();
+
+    startday = date1.substring(0,10);
+    lastday = date2.substring(0,10);
+    difference = int.parse(lastday.substring(8,10)) - int.parse(startday.substring(8,10));
+
+    return AlertDialog(
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          new Row(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  width: 100, height: 30,
+                  child: Center(
+                    child : Text('Start Date', textAlign: TextAlign.center , style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),
+                  ),
+                ),
+              ),
+              Expanded(
+                child : Container(
+                  child: _datepicker1(),
+                ),
+              ),
+            ],
+          ),
+          new Row(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  width: 100, height: 30,
+                  decoration: BoxDecoration(
+                  ),
+                  child: Center(
+                    child : Text('Last Date', textAlign: TextAlign.center , style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0)),
+                  ),
+                ),
+              ),
+              Expanded(
+                  child : Container(
+                    child: _datepicker2(),
+                  )
+              ),
+            ],
+          ),
+          new Row(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  width: 100, height: 50,
+                  decoration: BoxDecoration(
+                  ),
+                  child: Center( child : Text('Place', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, letterSpacing:1.0),),),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  child : TextField(
+                    controller: _placeController,
+                    decoration: InputDecoration.collapsed(
+                      fillColor: Colors.grey[50],
+                      hintText: 'place',
+                      filled: true,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
-      );
-    },
-  );
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('ADD', style: TextStyle(color: Color(0xFF91B3E7)),),
+          onPressed: () {
+            if(_placeController.text != ""){
+              startday = date1.substring(0,10);
+              lastday = date2.substring(0,10);
+              difference = int.parse(lastday.substring(8,10)) - int.parse(startday.substring(8,10));
+              print(difference);
+
+              String a = uuid.v4();
+              Firestore.instance.collection('travelogue').document(a).setData({
+                'startdate': date1.substring(0,10),
+                'lastdate': date2.substring(0,10),
+                'month': date1.substring(0,7),
+                'place' : _placeController.text,
+                'uid': userID,
+                'docuID': a,
+                'day': difference,
+                'note': "",
+                'note2': "",
+                'note3': "",
+                'note4': "",
+                'note5': "",
+                'note6': "",
+                'note7': "",
+                'url': 'assets/default.jpg'
+              });
+            }
+            Navigator.of(context).pop();
+            _image = null;
+          },
+        ),
+      ],
+    );
+  }
 }
 
 class TraveloguePage extends StatefulWidget {
@@ -253,31 +272,31 @@ class _TraveloguePageState extends State<TraveloguePage> {
               Stack(
                 children: <Widget>[
                   Container(
-                    child: Center(
-                      child: (record.url == "assets/default.jpg")
-                          ?
-                      Image.asset('assets/default.jpg', height: 137, width: 400, fit: BoxFit.fitWidth)
-                          :
-                      Image.asset(record.url, height: 137, width: 400, fit: BoxFit.fill)
-                    )
+                      child: Center(
+                          child: (record.url == "assets/default.jpg")
+                              ?
+                          Image.asset('assets/default.jpg', height: 137, width: 400, fit: BoxFit.fitWidth)
+                              :
+                          Image.network(record.url, height: 137, width: 400, fit: BoxFit.fill)
+                      )
                   ),
                   ListTile(
-                    title: InkWell(
-                      child: Container(
-                        padding: EdgeInsets.only(top: 40),
-                        child : Center(
-                          child: Text(record.place, style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
-                        )
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailPage(record: record),
-                          ),
-                        );
-                      },
-                    )
+                      title: InkWell(
+                        child: Container(
+                            padding: EdgeInsets.only(top: 40),
+                            child : Center(
+                              child: Text(record.place, style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white)),
+                            )
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailPage(record: record),
+                            ),
+                          );
+                        },
+                      )
                   ),
                 ],
               )
@@ -300,7 +319,16 @@ class _TraveloguePageState extends State<TraveloguePage> {
                   child : RaisedButton(
                       color: Theme.of(context).primaryColor,
                       onPressed: () {
-                        _asyncInputDialog(context);
+//                        Navigator.push(
+//                          context,
+//                          MaterialPageRoute(
+//                            builder: (context) => AddPage(),
+//                          ),
+//                        );
+                        showDialog(context: context,
+                            builder: (context){
+                              return AddPage();
+                            });
                       },
                       child: Row(
                         children: <Widget>[
@@ -353,6 +381,12 @@ class Record {
   final String lastdate;
   final String month;
   final String note;
+  final String note2;
+  final String note3;
+  final String note4;
+  final String note5;
+  final String note6;
+  final String note7;
   final String place;
   final String uid;
   final DocumentReference reference;
@@ -364,7 +398,6 @@ class Record {
       : assert(map['startdate'] != null),
         assert(map['lastdate'] != null),
         assert(map['month'] != null),
-      //assert(map['place'] != null),
         assert(map['uid'] != null),
         assert(map['docuID'] != null),
         assert(map['day'] != null),
@@ -373,6 +406,12 @@ class Record {
         lastdate = map['lastdate'],
         month = map['month'],
         note = map['note'],
+        note2 = map['note2'],
+        note3 = map['note3'],
+        note4 = map['note4'],
+        note5 = map['note5'],
+        note6 = map['note6'],
+        note7 = map['note7'],
         place = map['place'],
         uid = map['uid'],
         docuID = map['docuID'],
@@ -383,7 +422,7 @@ class Record {
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
-  String toString() => "Record<$startdate:$lastdate:$month:$note:$place:$uid:$docuID:$day:$url>";
+  String toString() => "Record<$startdate:$lastdate:$month:$note:$note2:$note3:$note4:$note5:$note6:$note7:$place:$uid:$docuID:$day:$url>";
 }
 
 class DetailPage extends StatefulWidget {
@@ -405,17 +444,32 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     });
   }
 
-  Future uploadPic(BuildContext context) async{
-    String fileName = basename(_image.path);
-    StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileName);
-    StorageUploadTask uploadTask = firebaseStorageRef.putFile(_image);
-    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
-    setState(() {
-      print("Profile Picture uploaded");
+  Future uploadPic(BuildContext context) async {
+    String _uploadedFileURL;
+    StorageReference storageReference = FirebaseStorage.instance
+        .ref()
+        .child(_image.path);
+    StorageUploadTask uploadTask = storageReference.putFile(_image);
+    await uploadTask.onComplete;
+    print('File Uploaded');
+    storageReference.getDownloadURL().then((fileURL) {
+      setState(() {
+        _uploadedFileURL = fileURL;
+      });
     });
+
+    var downurl = await storageReference.getDownloadURL();
+    var url = downurl.toString();
+    widget.record.reference.updateData({'url': url});
   }
 
   final _noteController = TextEditingController();
+  final _noteController2 = TextEditingController();
+  final _noteController3 = TextEditingController();
+  final _noteController4 = TextEditingController();
+  final _noteController5 = TextEditingController();
+  final _noteController6 = TextEditingController();
+  final _noteController7 = TextEditingController();
 
   int _page = 0;
   PageController _c;
@@ -431,7 +485,14 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     _noteController.text = widget.record.note;
+    _noteController2.text = widget.record.note2;
+    _noteController3.text = widget.record.note3;
+    _noteController4.text = widget.record.note4;
+    _noteController5.text = widget.record.note5;
+    _noteController6.text = widget.record.note6;
+    _noteController7.text = widget.record.note7;
     String travelDay = (widget.record.startdate) + " ~ " + (widget.record.lastdate);
+
     return Scaffold(
 
       appBar: AppBar(
@@ -449,21 +510,21 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                     Expanded(
                       flex: 8,
                       child: Container(
-                        margin: EdgeInsets.only(top: 10, left: 10),
-                        width: 395,
-                        height: 300,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
-                        ),
-                        child: (_image != null)
-                            ?
-                        Image.file(_image, fit: BoxFit.fill)
-                            :
-                        (
-                            (widget.record.url != "assets/default.jpg")
-                                ? Image.asset(widget.record.url, fit: BoxFit.fill)
-                                : Image.asset('assets/default.jpg', fit: BoxFit.fitWidth)
-                        )
+                          margin: EdgeInsets.only(top: 10, left: 10),
+                          width: 395,
+                          height: 300,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                          ),
+                          child: (_image != null)
+                              ?
+                          Image.file(_image, fit: BoxFit.fill)
+                              :
+                          (
+                              (widget.record.url != "assets/default.jpg")
+                                  ? Image.network(widget.record.url, fit: BoxFit.fill)
+                                  : Image.asset('assets/default.jpg', fit: BoxFit.fitWidth)
+                          )
                       ),
                     ),
                     Expanded(
@@ -495,41 +556,124 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 });
               },
               children: <Widget>[
-                for(int i=1; i<= widget.record.day+1; i++)
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    margin: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
-                      ),
-                    child: TextField(
-                      controller: _noteController,
-                      maxLines: 99,
-                      decoration: InputDecoration(
-                        hintText: "Comment",
-                      ),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                  ),
+                  child: TextField(
+                    controller: _noteController,
+                    maxLines: 99,
+                    decoration: InputDecoration.collapsed(
+                      hintText: "Day 1 Comment",
                     ),
-                  )
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                  ),
+                  child: TextField(
+                    controller: _noteController2,
+                    maxLines: 99,
+                    decoration: InputDecoration.collapsed(
+                      hintText: "Day 2 Comment",
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                  ),
+                  child: TextField(
+                    controller: _noteController3,
+                    maxLines: 99,
+                    decoration: InputDecoration.collapsed(
+                      hintText: "Day 3 Comment",
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                  ),
+                  child: TextField(
+                    controller: _noteController4,
+                    maxLines: 99,
+                    decoration: InputDecoration.collapsed(
+                      hintText: "Day 4 Comment",
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                  ),
+                  child: TextField(
+                    controller: _noteController5,
+                    maxLines: 99,
+                    decoration: InputDecoration.collapsed(
+                      hintText: "Day 5 Comment",
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                  ),
+                  child: TextField(
+                    controller: _noteController6,
+                    maxLines: 99,
+                    decoration: InputDecoration.collapsed(
+                      hintText: "Day 6 Comment",
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                  ),
+                  child: TextField(
+                    controller: _noteController7,
+                    maxLines: 99,
+                    decoration: InputDecoration.collapsed(
+                      hintText: "Day 7 Comment",
+                    ),
+                  ),
+                )
               ],
             ),
           ),
           Row(
             children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Container(
-                margin: EdgeInsets.only(left: 20, right: 20),
-                padding: EdgeInsets.only(bottom: 25.0),
-                child : RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    child: Text("DELETE", style: TextStyle(color: Colors.white),),
-                    onPressed: () {
-                      Firestore.instance.collection('travelogue').document(widget.record.docuID).delete();
-                      Navigator.of(context).pop();
-                    }
+              Expanded(
+                flex: 1,
+                child: Container(
+                  margin: EdgeInsets.only(left: 20, right: 20),
+                  padding: EdgeInsets.only(bottom: 25.0),
+                  child : RaisedButton(
+                      color: Theme.of(context).primaryColor,
+                      child: Text("DELETE", style: TextStyle(color: Colors.white),),
+                      onPressed: () {
+                        Firestore.instance.collection('travelogue').document(widget.record.docuID).delete();
+                        Navigator.of(context).pop();
+                      }
+                  ),
                 ),
-               ),
-            ),
+              ),
               Expanded(
                 flex: 1,
                 child: Container(
@@ -540,21 +684,17 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                       child: Text("SAVE", style: TextStyle(color: Colors.white),),
                       onPressed: () {
                         uploadPic(context);
-                        if(_image == null){
-                          widget.record.reference.updateData({
-                            'note': _noteController.text,
-                          });
-                          Navigator.of(context).pop();
-                          _image = null;
-                        }
-                        else{
-                          widget.record.reference.updateData({
-                            'note': _noteController.text,
-                            'url': _image.path,
-                          });
-                          Navigator.of(context).pop();
-                          _image = null;
-                        }
+                        widget.record.reference.updateData({
+                          'note': _noteController.text,
+                          'note2': _noteController2.text,
+                          'note3': _noteController3.text,
+                          'note4': _noteController4.text,
+                          'note5': _noteController5.text,
+                          'note6': _noteController6.text,
+                          'note7': _noteController7.text,
+                        });
+                        Navigator.of(context).pop();
+                        _image = null;
                       }
                   ),
                 ),
