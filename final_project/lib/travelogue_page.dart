@@ -200,7 +200,7 @@ class AddPageState extends State<AddPage>{
             if(_placeController.text != ""){
               startday = date1.substring(0,10);
               lastday = date2.substring(0,10);
-              difference = int.parse(lastday.substring(8,10)) - int.parse(startday.substring(8,10));
+              difference = int.parse(lastday.substring(8,10)) - int.parse(startday.substring(8,10)) + 1;
               print(difference);
 
               String a = uuid.v4();
@@ -496,54 +496,41 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     return Scaffold(
 
       appBar: AppBar(
-        title: Text(travelDay, style: TextStyle(color: Colors.white)),
+        title: Center(
+          child: Text(travelDay, style: TextStyle(color: Colors.white)),
+        ),
+        actions: <Widget>[
+          new IconButton( icon: new Icon(Icons.delete_outline),
+            onPressed: () => {
+              Firestore.instance.collection('travelogue').document(widget.record.docuID).delete(),
+              Navigator.of(context).pop(),
+            },
+          ),
+        ],
       ),
 
       body: Column(
         children: <Widget>[
           Expanded(
             flex: 4,
-            child: Row(
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 8,
-                      child: Container(
-                          margin: EdgeInsets.only(top: 10, left: 10),
-                          width: 395,
-                          height: 300,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
-                          ),
-                          child: (_image != null)
-                              ?
-                          Image.file(_image, fit: BoxFit.fill)
-                              :
-                          (
-                              (widget.record.url != "assets/default.jpg")
-                                  ? Image.network(widget.record.url, fit: BoxFit.fill)
-                                  : Image.asset('assets/default.jpg', fit: BoxFit.fitWidth)
-                          )
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.photo_camera,
-                            size: 30.0,
-                          ),
-                          onPressed: () {
-                            getImage();
-                          },
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ],
+            child: InkWell(
+              child :Container(
+                  margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                  width: 395,
+                  height: 300,
+                  child: (_image != null)
+                      ?
+                  Image.file(_image, fit: BoxFit.fitWidth)
+                      :
+                  (
+                      (widget.record.url != "assets/default.jpg")
+                          ? Image.network(widget.record.url, fit: BoxFit.fitWidth)
+                          : Image.asset('assets/default.jpg', fit: BoxFit.fitWidth)
+                  )
+              ),
+              onTap: () {
+                getImage();
+              },
             ),
           ),
           Expanded(
@@ -558,9 +545,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
                   child: TextField(
                     controller: _noteController,
@@ -572,9 +560,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
                   child: TextField(
                     controller: _noteController2,
@@ -586,9 +575,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
                   child: TextField(
                     controller: _noteController3,
@@ -600,9 +590,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
                   child: TextField(
                     controller: _noteController4,
@@ -614,9 +605,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
                   child: TextField(
                     controller: _noteController5,
@@ -628,9 +620,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
                   child: TextField(
                     controller: _noteController6,
@@ -642,9 +635,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
                   child: TextField(
                     controller: _noteController7,
@@ -662,23 +656,8 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
               Expanded(
                 flex: 1,
                 child: Container(
-                  margin: EdgeInsets.only(left: 20, right: 20),
-                  padding: EdgeInsets.only(bottom: 25.0),
-                  child : RaisedButton(
-                      color: Theme.of(context).primaryColor,
-                      child: Text("DELETE", style: TextStyle(color: Colors.white),),
-                      onPressed: () {
-                        Firestore.instance.collection('travelogue').document(widget.record.docuID).delete();
-                        Navigator.of(context).pop();
-                      }
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Container(
-                  margin: EdgeInsets.only(left: 20, right: 20),
-                  padding: EdgeInsets.only(bottom: 25.0),
+                  margin: EdgeInsets.only(left: 160, right: 160),
+                  padding: EdgeInsets.only(bottom: 20),
                   child : RaisedButton(
                       color: Theme.of(context).primaryColor,
                       child: Text("SAVE", style: TextStyle(color: Colors.white),),
@@ -711,7 +690,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
         },
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
-          for(int i=1; i<=widget.record.day+1;i++)
+          for(int i=1; i<=widget.record.day;i++)
             new BottomNavigationBarItem(icon : Icon(Icons.directions_walk), title: new Text("Day " + i.toString(),)),
         ],
       ),

@@ -110,12 +110,13 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
             children: <Widget>[
               ListTile(
                 leading: Container(
-                  child : Text(record.date.substring(8,10), style: TextStyle(fontSize: 40, color: Theme.of(context).primaryColor)),),
+                  child : Text(record.date.substring(0,10), style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColor)),),
                 title: Container(
                   padding: EdgeInsets.only(top : 10, bottom : 10),
-                  child :Text(record.title, style: Theme.of(context).textTheme.title),),
-                subtitle: Text(record.author, style: Theme.of(context).textTheme.subtitle),
-
+                  child :Text(record.title, style: Theme.of(context).textTheme.title),
+                ),
+                //subtitle: Text(record.author, style: Theme.of(context).textTheme.subtitle),
+                subtitle: _buildstar(record.star),
               ),
               ButtonTheme.bar(
                 child: ButtonBar(
@@ -390,12 +391,12 @@ class _DetailPageState extends State<DetailPage> {
               Expanded (
                 flex: 2,
                 child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.only(left: 10.0),
-                      child: Text(widget.record.date),
-                    ),
-                  ]
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.only(left: 10.0),
+                        child: Text(widget.record.date),
+                      ),
+                    ]
                 ),
               ),
               Expanded(
@@ -535,7 +536,8 @@ class _DetailPageState extends State<DetailPage> {
                 _noteController.clear();
                 Navigator.of(context).pop();
               },
-            ),),
+            ),
+          ),
         ],
       ),
     );
@@ -742,17 +744,20 @@ class AddPageState extends State<AddPage>{
 //                    filled: true,
 //                  ),
 //                ),
-                FlutterRatingBar(
-                  initialRating: 0,
-                  itemSize: 30.0,
-                  fillColor: Theme.of(context).primaryColor,
-                  borderColor: Theme.of(context).primaryColor,
-                  allowHalfRating: false,
-                  onRatingUpdate: (rating) {
-                    rate2 = rating;
-                    print(rating);
-                  },
-                ),
+                Container(
+                  padding: EdgeInsets.only(left: 30.0),
+                  child: FlutterRatingBar(
+                    initialRating: 0,
+                    itemSize: 30.0,
+                    fillColor: Theme.of(context).primaryColor,
+                    borderColor: Theme.of(context).primaryColor,
+                    allowHalfRating: false,
+                    onRatingUpdate: (rating) {
+                      rate2 = rating;
+                      print(rating);
+                    },
+                  ),
+                )
               ),
             ],
           ),
