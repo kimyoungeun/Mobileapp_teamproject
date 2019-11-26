@@ -134,10 +134,10 @@ class _DiaryPageState extends State<DiaryPage> {
             Expanded(
               flex: 5,
               child: Padding(
-                padding: EdgeInsets.only(top: 1.0),
+                padding: EdgeInsets.only(top: 5.0),
                 child: Center(
                   child: ListView(
-                    padding: EdgeInsets.fromLTRB(10, 10, 10, 15),
+                    padding: EdgeInsets.fromLTRB(8, 10, 8, 15),
                     children: reviews
                         .map((item) =>
                         Padding(

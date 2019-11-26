@@ -131,7 +131,7 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
                 child: Center(
                   child:
                   ListView(
-                    padding: EdgeInsets.fromLTRB(10, 10, 10, 15),
+                    padding: EdgeInsets.fromLTRB(8, 10, 8, 15),
                     children: reviews
                         .map((item) =>
                         Padding(
