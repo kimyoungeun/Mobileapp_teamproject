@@ -136,16 +136,99 @@ class _DiaryPageState extends State<DiaryPage> {
               child: Padding(
                 padding: EdgeInsets.only(top: 1.0),
                 child: Center(
-                  child: OrientationBuilder(
-                    builder: (context, orientation) {
-                      return GridView.count(
-                        crossAxisCount: orientation == Orientation.portrait ? 1 : 1,
-                        mainAxisSpacing: 7.0,
-                        padding: EdgeInsets.all(18.0),
-                        childAspectRatio: 7.2 / 2.8,
-                        children: _cards,
-                      );
-                    },
+                  child: ListView(
+                    padding: EdgeInsets.fromLTRB(10, 10, 10, 15),
+                    children: reviews
+                        .map((item) =>
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ExpansionPanelList(
+                              animationDuration: Duration(seconds: 1),
+                              children: [
+                                ExpansionPanel(
+                                  body: Container(
+                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                                    child: Column(
+                                      children:<Widget>[
+                                        Container(
+                                          padding: EdgeInsets.only(left: 30, right: 30),
+                                          child: Divider(color: Colors.black54),
+                                        ),
+                                        SizedBox(height: 10,),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 30, right: 30),
+                                          child: Center(
+                                            child : Text(
+                                              Record.fromSnapshot(item).note,
+                                              style: TextStyle(
+                                                color: Colors.grey[700],
+                                                fontSize: 18,
+                                              ),
+                                            ),),
+                                        ),
+                                        SizedBox(height: 30,),
+                                        Row(
+                                          children: <Widget>[
+                                            Padding(
+                                                padding: EdgeInsets.only(left: 250, bottom: 10),
+                                                child: GestureDetector(
+                                                  child: Text("EDIT", style: TextStyle(fontSize: 18, color: Theme.of(context).primaryColor),),
+                                                  onTap: (){
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => DetailPage(record: Record.fromSnapshot(item)),
+                                                      ),
+                                                    );
+                                                  },
+                                                )
+                                            ),
+                                          ],
+                                        )
+                                      ],),
+                                  ),
+                                  headerBuilder: (BuildContext context, bool isExpanded) {
+                                    return Container(
+                                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                                      child: ListTile(
+                                        leading:
+                                        Container(
+                                          child : Text(Record.fromSnapshot(item).date.substring(8,10), style: TextStyle(fontSize: 40, color: Theme.of(context).primaryColor)),
+                                        ),
+                                        title : Container(
+                                          padding: EdgeInsets.only(left: 20),
+                                          child : Text(
+                                            Record.fromSnapshot(item).noteTitle,
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontSize: 18,
+                                            ),
+                                          ),),
+                                      ),
+                                    );
+                                  },
+                                  isExpanded: Record.fromSnapshot(item).check[0],
+                                )
+                              ],
+                              expansionCallback: (int s, bool status) {
+                                setState(() {
+                                  Firestore.instance.collection('diary').document(Record.fromSnapshot(item).docuID).setData({
+                                    'date': Record.fromSnapshot(item).date,
+                                    'noteTitle': Record.fromSnapshot(item).noteTitle,
+                                    'note': Record.fromSnapshot(item).note,
+                                    'uid': userID,
+                                    'docuID': Record.fromSnapshot(item).docuID,
+                                    'month': selectedDate.substring(0,7),
+                                    'check' : [!status, !status]
+                                  });
+                                });
+                              },
+                            ),
+                          ),
+                        ),)
+                        .toList(),
                   ),
                 ),
               ),
@@ -176,6 +259,7 @@ class Record {
   final String uid;
   final DocumentReference reference;
   final String docuID;
+  List check = List<bool>();
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['date'] != null),
@@ -189,7 +273,8 @@ class Record {
         note = map['note'],
         noteTitle = map['noteTitle'],
         uid = map['uid'],
-        docuID = map['docuID'];
+        docuID = map['docuID'],
+        check = map['check'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
@@ -216,8 +301,8 @@ class AddPageState extends State<AddPage>{
 
     return Scaffold(
       appBar: new AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-          title: new Text("Diary", style: TextStyle(color: Colors.white),)
+        backgroundColor: Theme.of(context).primaryColor,
+        title: new Text("Diary", style: TextStyle(color: Colors.white),),
       ),
       body: Column(
         children: <Widget>[
@@ -267,6 +352,7 @@ class AddPageState extends State<AddPage>{
                   'noteTitle': _noteTitleController.text,
                   'uid': userID,
                   'docuID': a,
+                  'check': [false, false]
                 });
                 _noteController.clear();
                 Navigator.of(context).pop();
@@ -302,8 +388,20 @@ class _DetailPageState extends State<DetailPage> {
 
     return Scaffold(
       appBar: new AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-          title: new Text(widget.record.date, style: TextStyle(color: Colors.white))
+        backgroundColor: Theme.of(context).primaryColor,
+        title: new Text(widget.record.date, style: TextStyle(color: Colors.white)),
+        actions: <Widget>[
+          Padding(
+              padding : EdgeInsets.only(right : 20, top: 20),
+              child : GestureDetector(
+                child: Text("DELETE", style: TextStyle(color: Colors.white),),
+                onTap: (){
+                  Firestore.instance.collection('diary').document(widget.record.docuID).delete();
+                  Navigator.of(context).pop();
+                },
+              )
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[

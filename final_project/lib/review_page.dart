@@ -11,21 +11,21 @@ String collection;
 int _page = 0;
 String addText;
 
-Widget _buildstar(int num){
+Widget _buildstar(BuildContext context, int num){
   return Container(
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(5, (index){
         return (index < num ? IconTheme(
           data: IconThemeData(
-            color: Colors.yellow,
-            size: 20,
+            color: Theme.of(context).primaryColor,
+            size: 30,
           ),
           child: Icon(Icons.star),
         ) : IconTheme(
           data: IconThemeData(
             color: Colors.grey[350],
-            size: 20,
+            size: 30,
           ),
           child: Icon(Icons.star),
         ));
@@ -82,8 +82,7 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
           _page = 3;
         }
 
-        return
-          _buildListCard(context, snapshot.data.documents);
+        return _buildListCard(context, snapshot.data.documents);
       },
     );
   }
@@ -94,62 +93,6 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
     snapshot.sort((a, b) {
       return a["date"].compareTo(b["date"]);
     });
-
-    List<Card> _cards = reviews.map((product) {
-      final record = Record.fromSnapshot(product);
-      return Card(
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        elevation: 5,
-        child: Container(
-          padding: EdgeInsets.all(1.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              ListTile(
-                leading: Container(
-                  child : Text(record.date.substring(0,10), style: TextStyle(fontSize: 15, color: Theme.of(context).primaryColor)),),
-                title: Container(
-                  padding: EdgeInsets.only(top : 10, bottom : 10),
-                  child :Text(record.title, style: Theme.of(context).textTheme.title),
-                ),
-                //subtitle: Text(record.author, style: Theme.of(context).textTheme.subtitle),
-                subtitle: _buildstar(record.star),
-              ),
-              ButtonTheme.bar(
-                child: ButtonBar(
-                  children: <Widget>[
-                    FlatButton(
-                      onPressed: () {
-                        Firestore.instance.collection(collection).document(record.docuID).delete();
-                      },
-                      child: Container(
-                          child: Text('DELETE', style: TextStyle(color: Theme.of(context).primaryColor))
-                      ),
-                    ),
-                    FlatButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailPage(record: record),
-                          ),
-                        );
-                      },
-                      child: Container(
-                          child: Text('MORE', style: TextStyle(color: Theme.of(context).primaryColor))
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }).toList();
 
     return Scaffold(
         backgroundColor: Theme.of(context).accentColor,
@@ -180,21 +123,149 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
                   ),
                 )
             ),
+            SizedBox(height: 10,),
             Expanded(
               flex: 5,
               child: Padding(
                 padding: EdgeInsets.only(top: 1.0),
                 child: Center(
-                  child: OrientationBuilder(
-                    builder: (context, orientation) {
-                      return GridView.count(
-                        crossAxisCount: orientation == Orientation.portrait ? 1 : 1,
-                        mainAxisSpacing: 7.0,
-                        padding: EdgeInsets.all(18.0),
-                        childAspectRatio: 7.2 / 2.8,
-                        children: _cards,
-                      );
-                    },
+                  child:
+                  ListView(
+                    padding: EdgeInsets.fromLTRB(10, 10, 10, 15),
+                    children: reviews
+                        .map((item) =>
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ExpansionPanelList(
+                              animationDuration: Duration(seconds: 1),
+                              children: [
+                                ExpansionPanel(
+                                  body: Container(
+                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                                    child: Column(
+                                      children:<Widget>[
+                                        Row(
+                                          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 30),
+                                              child : Icon(Icons.date_range, color: Colors.black45, size:30),),
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 30),
+                                              child : Text(
+                                                Record.fromSnapshot(item).date,
+                                                style: TextStyle(
+                                                  color: Colors.grey[700],
+                                                  fontSize: 18,
+                                                ),
+                                              ),)
+                                          ],
+                                        ),
+                                        SizedBox(height: 20,),
+                                        Row(
+                                          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 30),
+                                              child : Icon(Icons.star_border, color: Colors.black45, size:30),),
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 30),
+                                              child : Container(
+                                                child : _buildstar(context, Record.fromSnapshot(item).star),
+                                              ),)
+                                          ],
+                                        ),
+                                        SizedBox(height: 10,),
+                                        Container(
+                                          padding: EdgeInsets.only(left: 30, right: 30),
+                                          child: Divider(color: Colors.black54),
+                                        ),
+                                        SizedBox(height: 10,),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 30, right: 30),
+                                          child: Center(
+                                            child : Text(
+                                              Record.fromSnapshot(item).note,
+                                              style: TextStyle(
+                                                color: Colors.grey[700],
+                                                fontSize: 18,
+                                              ),
+                                            ),),
+                                        ),
+                                        SizedBox(height: 30,),
+                                        Row(
+                                          children: <Widget>[
+                                            Padding(
+                                                padding: EdgeInsets.only(left: 250, bottom: 10),
+                                                child: GestureDetector(
+                                                  child: Text("EDIT", style: TextStyle(fontSize: 18, color: Theme.of(context).primaryColor),),
+                                                  onTap: (){
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => DetailPage(record: Record.fromSnapshot(item)),
+                                                      ),
+                                                    );
+                                                  },
+                                                )
+                                            ),
+                                          ],
+                                        )
+                                      ],),
+                                  ),
+                                  headerBuilder: (BuildContext context, bool isExpanded) {
+                                    return Container(
+                                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                                      child: ListTile(
+                                        leading:
+                                        Container(
+                                          child : Text(Record.fromSnapshot(item).date.substring(8,10), style: TextStyle(fontSize: 40, color: Theme.of(context).primaryColor)),
+                                        ),
+                                        title : Container(
+                                          padding: EdgeInsets.only(left: 20),
+                                          child : Text(
+                                            Record.fromSnapshot(item).title,
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontSize: 18,
+                                            ),
+                                          ),),
+                                        subtitle : Container(
+                                          padding: EdgeInsets.only(left: 20),
+                                          child : Text(
+                                            Record.fromSnapshot(item).author,
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 14,
+                                            ),
+                                          ),),),
+                                    );
+                                  },
+                                  isExpanded: Record.fromSnapshot(item).check[0],
+                                )
+                              ],
+                              expansionCallback: (int s, bool status) {
+                                setState(() {
+                                  Firestore.instance.collection(collection).document(Record.fromSnapshot(item).docuID).setData({
+                                    'date': Record.fromSnapshot(item).date,
+                                    'title': Record.fromSnapshot(item).title,
+                                    'author': Record.fromSnapshot(item).author,
+                                    'star': Record.fromSnapshot(item).star,
+                                    'note': Record.fromSnapshot(item).note,
+                                    'uid': userID,
+                                    'docuID': Record.fromSnapshot(item).docuID2,
+                                    'docuID2': Record.fromSnapshot(item).docuID2,
+                                    'month': selectedDate.substring(0,7),
+                                    'check' : [!status, !status]
+                                  });
+                                });
+                              },
+                            ),
+                          ),
+                        ),)
+                        .toList(),
                   ),
                 ),
               ),
@@ -252,10 +323,13 @@ class Record {
   final String author;
   final int star;
   final String note;
+  //final String url;
   final String uid;
   final DocumentReference reference;
   final String docuID;
+  final String docuID2;
   final String month;
+  List check = List<bool>();
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['date'] != null),
@@ -263,17 +337,23 @@ class Record {
         assert(map['author'] != null),
         assert(map['star'] != null),
         assert(map['note'] != null),
+  //assert(map['url'] != null),
         assert(map['uid'] != null),
         assert(map['docuID'] != null),
+        assert(map['docuID2'] != null),
         assert(map['month'] != null),
+  //assert(map['bool'] != null),
         date = map['date'],
         title = map['title'],
         author = map['author'],
         note = map['note'],
+  //url = map['url'],
         uid = map['uid'],
         star = map['star'],
         docuID = map['docuID'],
-        month = map['month'];
+        docuID2 = map['docuID2'],
+        month = map['month'],
+        check = map['check'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
@@ -369,8 +449,20 @@ class _DetailPageState extends State<DetailPage> {
 
     return Scaffold(
       appBar: new AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-          title: new Text(detailTitle, style: TextStyle(color: Colors.white))
+        backgroundColor: Theme.of(context).primaryColor,
+        title: new Text(detailTitle, style: TextStyle(color: Colors.white)),
+        actions: <Widget>[
+          Padding(
+              padding : EdgeInsets.only(right : 20, top: 20),
+              child : GestureDetector(
+                child: Text("DELETE", style: TextStyle(color: Colors.white),),
+                onTap: (){
+                  Firestore.instance.collection(collection).document(widget.record.docuID).delete();
+                  Navigator.of(context).pop();
+                },
+              )
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -558,6 +650,7 @@ class AddPage extends StatefulWidget{
 class AddPageState extends State<AddPage>{
 
   var uuid = Uuid();
+
   DateTime _date = DateTime.now();
   String date = DateTime.now().toString().substring(0,10);
 
@@ -736,28 +829,28 @@ class AddPageState extends State<AddPage>{
                 ),
               ),
               Expanded(
-                flex: 2,
-                child:
+                  flex: 2,
+                  child:
 //                TextField(
 //                  controller: _starController,
 //                  decoration: InputDecoration(
 //                    filled: true,
 //                  ),
 //                ),
-                Container(
-                  padding: EdgeInsets.only(left: 30.0),
-                  child: FlutterRatingBar(
-                    initialRating: 0,
-                    itemSize: 30.0,
-                    fillColor: Theme.of(context).primaryColor,
-                    borderColor: Theme.of(context).primaryColor,
-                    allowHalfRating: false,
-                    onRatingUpdate: (rating) {
-                      rate2 = rating;
-                      print(rating);
-                    },
-                  ),
-                )
+                  Container(
+                    padding: EdgeInsets.only(left: 30.0),
+                    child: FlutterRatingBar(
+                      initialRating: 0,
+                      itemSize: 30.0,
+                      fillColor: Theme.of(context).primaryColor,
+                      borderColor: Theme.of(context).primaryColor,
+                      allowHalfRating: false,
+                      onRatingUpdate: (rating) {
+                        rate2 = rating;
+                        print(rating);
+                      },
+                    ),
+                  )
               ),
             ],
           ),
@@ -791,7 +884,9 @@ class AddPageState extends State<AddPage>{
                   'note': _noteController.text,
                   'uid': userID,
                   'docuID': a,
+                  'docuID2': a,
                   'month': selectedDate.substring(0,7),
+                  'check': [false, false]
                 });
                 _dateController.clear();
                 _titleController.clear();

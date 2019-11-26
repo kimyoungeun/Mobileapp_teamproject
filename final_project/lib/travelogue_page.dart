@@ -13,33 +13,6 @@ String startday = "";
 String lastday = "";
 int difference = 0;
 
-class PhotoHero extends StatelessWidget {
-  const PhotoHero({ Key key, this.photo, this.onTap, this.width }) : super(key: key);
-  final String photo;
-  final VoidCallback onTap;
-  final double width;
-
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      child: Hero(
-        tag: photo,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            child: Image.network(
-              photo,
-              fit: BoxFit.fill,
-              height: 137,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class AddPage extends StatefulWidget{
   @override
   AddPageState createState() {
@@ -246,7 +219,7 @@ class AddPageState extends State<AddPage>{
                 'note5': "",
                 'note6': "",
                 'note7': "",
-                'url': "http://handong.edu/site/handong/res/img/logo.png"
+                'url': 'assets/default.jpg'
               });
             }
             Navigator.of(context).pop();
@@ -264,9 +237,6 @@ class TraveloguePage extends StatefulWidget {
 }
 
 class _TraveloguePageState extends State<TraveloguePage> {
-
-  String url;
-
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('travelogue').where('month', isEqualTo: selectedDate.substring(0,7)).where('uid', isEqualTo: userID).snapshots(),
@@ -287,7 +257,6 @@ class _TraveloguePageState extends State<TraveloguePage> {
 
     List<Card> _cards = reviews.map((product) {
       final record = Record.fromSnapshot(product);
-
       return Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
@@ -303,15 +272,13 @@ class _TraveloguePageState extends State<TraveloguePage> {
               Stack(
                 children: <Widget>[
                   Container(
-                    child: Center(
-                      child: (record.url != "http://handong.edu/site/handong/res/img/logo.png")
-                          ?
-                      Image.network(record.url, height: 137, width: 400, fit: BoxFit.fill)
-                      //PhotoHero(photo: record.url, width: 400.0)
-                          :
-                      Image.asset('assets/default.jpg', height: 137, width: 400, fit: BoxFit.fitWidth)
-                      //PhotoHero(photo: "http://handong.edu/site/handong/res/img/logo.png", width: 400.0)
-                    ),
+                      child: Center(
+                          child: (record.url == "assets/default.jpg")
+                              ?
+                          Image.asset('assets/default.jpg', height: 137, width: 400, fit: BoxFit.fitWidth)
+                              :
+                          Image.network(record.url, height: 137, width: 400, fit: BoxFit.fill)
+                      )
                   ),
                   ListTile(
                       title: InkWell(
@@ -352,6 +319,12 @@ class _TraveloguePageState extends State<TraveloguePage> {
                   child : RaisedButton(
                       color: Theme.of(context).primaryColor,
                       onPressed: () {
+//                        Navigator.push(
+//                          context,
+//                          MaterialPageRoute(
+//                            builder: (context) => AddPage(),
+//                          ),
+//                        );
                         showDialog(context: context,
                             builder: (context){
                               return AddPage();
@@ -419,7 +392,7 @@ class Record {
   final DocumentReference reference;
   final String docuID;
   final int day;
-  String url;
+  final String url;
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['startdate'] != null),
@@ -471,8 +444,8 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     });
   }
 
-  String _uploadedFileURL;
   Future uploadPic(BuildContext context) async {
+    String _uploadedFileURL;
     StorageReference storageReference = FirebaseStorage.instance
         .ref()
         .child(_image.path);
@@ -480,9 +453,9 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     await uploadTask.onComplete;
     print('File Uploaded');
     storageReference.getDownloadURL().then((fileURL) {
-        setState(() {
-          _uploadedFileURL = fileURL;
-        });
+      setState(() {
+        _uploadedFileURL = fileURL;
+      });
     });
 
     var downurl = await storageReference.getDownloadURL();
@@ -527,11 +500,15 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
           child: Text(travelDay, style: TextStyle(color: Colors.white)),
         ),
         actions: <Widget>[
-          new IconButton( icon: new Icon(Icons.delete_outline),
-            onPressed: () => {
-              Firestore.instance.collection('travelogue').document(widget.record.docuID).delete(),
-              Navigator.of(context).pop(),
-            },
+          Padding(
+              padding : EdgeInsets.only(right : 20, top: 20),
+              child : GestureDetector(
+                child: Text("DELETE", style: TextStyle(color: Colors.white),),
+                onTap: (){
+                  Firestore.instance.collection('travelogue').document(widget.record.docuID).delete();
+                  Navigator.of(context).pop();
+                },
+              )
           ),
         ],
       ),
@@ -541,21 +518,19 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
           Expanded(
             flex: 4,
             child: InkWell(
-              child: InkWell(
-                child: Container(
-                    margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-                    width: 395,
-                    height: 300,
-                    child: (_image != null)
-                        ?
-                    Image.file(_image, fit: BoxFit.fitWidth)
-                        :
-                    (
-                        (widget.record.url != "http://handong.edu/site/handong/res/img/logo.png")
-                            ? PhotoHero(photo: widget.record.url)
-                            : PhotoHero(photo: "http://handong.edu/site/handong/res/img/logo.png")
-                    )
-                )
+              child :Container(
+                  margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                  width: 395,
+                  height: 300,
+                  child: (_image != null)
+                      ?
+                  Image.file(_image, fit: BoxFit.fitWidth)
+                      :
+                  (
+                      (widget.record.url != "assets/default.jpg")
+                          ? Image.network(widget.record.url, fit: BoxFit.fitWidth)
+                          : Image.asset('assets/default.jpg', fit: BoxFit.fitWidth)
+                  )
               ),
               onTap: () {
                 getImage();
