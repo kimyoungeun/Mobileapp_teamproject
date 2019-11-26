@@ -125,7 +125,7 @@ class _DiaryPageState extends State<DiaryPage> {
                       child: Row(
                         children: <Widget>[
                           Icon(Icons.add, color: Colors.white),
-                          Text("    Add a diary ... ", style : TextStyle(fontSize: 18, color: Colors.white)),
+                          Text("    Add a diary", style : TextStyle(fontSize: 18, color: Colors.white)),
                         ],
                       )
                   ),

@@ -19,13 +19,13 @@ Widget _buildstar(BuildContext context, int num){
         return (index < num ? IconTheme(
           data: IconThemeData(
             color: Theme.of(context).primaryColor,
-            size: 30,
+            size: 18,
           ),
           child: Icon(Icons.star),
         ) : IconTheme(
           data: IconThemeData(
             color: Colors.grey[350],
-            size: 30,
+            size: 18,
           ),
           child: Icon(Icons.star),
         ));
@@ -63,22 +63,22 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
 
         if(page == 0){
           person = "Director :   ";
-          addText = "    Add a movie review ... ";
+          addText = "    Add a movie review";
           _page = 0;
         }
         else if(page == 1){
           person = "Author :   ";
-          addText = "    Add a book review ... ";
+          addText = "    Add a book review";
           _page = 1;
         }
         if(page == 2){
           person = "Author :   ";
-          addText = "    Add a exhibition review ... ";
+          addText = "    Add a exhibition review";
           _page = 2;
         }
         else if(page == 3){
           person = "Artist :   ";
-          addText = "    Add a concert review ... ";
+          addText = "    Add a concert review";
           _page = 3;
         }
 
@@ -156,7 +156,7 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
                                           children: <Widget>[
                                             Padding(
                                               padding: EdgeInsets.only(left: 30),
-                                              child : Icon(Icons.date_range, color: Colors.black45, size:30),),
+                                              child : Icon(Icons.date_range, color: Colors.black45, size:20),),
                                             Padding(
                                               padding: EdgeInsets.only(left: 30),
                                               child : Text(
@@ -174,11 +174,17 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
                                           children: <Widget>[
                                             Padding(
                                               padding: EdgeInsets.only(left: 30),
-                                              child : Icon(Icons.star_border, color: Colors.black45, size:30),),
+                                              child : Icon(Icons.person, color: Colors.black45, size:20),),
                                             Padding(
                                               padding: EdgeInsets.only(left: 30),
                                               child : Container(
-                                                child : _buildstar(context, Record.fromSnapshot(item).star),
+                                                child : Text(
+                                                  Record.fromSnapshot(item).author,
+                                                  style: TextStyle(
+                                                    color: Colors.grey[700],
+                                                    fontSize: 18,
+                                                  ),
+                                                ),
                                               ),)
                                           ],
                                         ),
@@ -238,14 +244,15 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
                                             ),
                                           ),),
                                         subtitle : Container(
-                                          padding: EdgeInsets.only(left: 20),
-                                          child : Text(
-                                            Record.fromSnapshot(item).author,
-                                            style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 14,
-                                            ),
-                                          ),
+                                          padding: EdgeInsets.only(top: 10, left: 18),
+                                          child: _buildstar(context, Record.fromSnapshot(item).star),
+//                                          child : Text(
+//                                            Record.fromSnapshot(item).author,
+//                                            style: TextStyle(
+//                                              color: Colors.grey,
+//                                              fontSize: 14,
+//                                            ),
+//                                          ),
                                         ),),
                                     );
                                   },

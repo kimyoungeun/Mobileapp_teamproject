@@ -14,7 +14,7 @@ Future<String> _asyncInputDialog(BuildContext context) async {
     barrierDismissible: false, // dialog is dismissible with a tap on the barrier
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Enter something to do...'),
+        title: Text('Enter something to do'),
         content: new Row(
           children: <Widget>[
             new Expanded(
@@ -85,7 +85,7 @@ class TodoListState extends State<TodoList> {
                     child: Row(
                       children: <Widget>[
                         Icon(Icons.add, color: Colors.white,),
-                        Text("    Add a to-do ... ", style : TextStyle(fontSize: 18, color: Colors.white)),
+                        Text("    Add a to-do", style : TextStyle(fontSize: 18, color: Colors.white)),
                       ],
                     )
                 ),

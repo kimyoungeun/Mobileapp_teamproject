@@ -333,7 +333,7 @@ class _TraveloguePageState extends State<TraveloguePage> {
                       child: Row(
                         children: <Widget>[
                           Icon(Icons.add, color: Colors.white),
-                          Text("    Add a travelogue ... ", style : TextStyle(fontSize: 18, color: Colors.white)),
+                          Text("    Add a travelogue", style : TextStyle(fontSize: 18, color: Colors.white)),
                         ],
                       )
                   ),
