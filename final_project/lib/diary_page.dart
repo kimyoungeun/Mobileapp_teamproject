@@ -191,7 +191,7 @@ class _DiaryPageState extends State<DiaryPage> {
                                   ),
                                   headerBuilder: (BuildContext context, bool isExpanded) {
                                     return Container(
-                                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                                      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                                       child: ListTile(
                                         leading:
                                         Container(
