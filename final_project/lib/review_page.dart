@@ -94,6 +94,11 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
       return a["date"].compareTo(b["date"]);
     });
 
+    if(_page == 0) collection = "movie_review";
+    if(_page == 1) collection = "book_review";
+    if(_page == 2) collection = "exhibition_review";
+    if(_page == 3) collection = "concert_review";
+
     return Scaffold(
         backgroundColor: Theme.of(context).accentColor,
         body: Column(
@@ -240,7 +245,8 @@ class _ReviewPageState extends State<ReviewPage> with SingleTickerProviderStateM
                                               color: Colors.grey,
                                               fontSize: 14,
                                             ),
-                                          ),),),
+                                          ),
+                                        ),),
                                     );
                                   },
                                   isExpanded: Record.fromSnapshot(item).check[0],
@@ -421,12 +427,17 @@ class _DetailPageState extends State<DetailPage> {
   final _noteController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  void initState(){
+    super.initState();
     _dateController.text = widget.record.date;
     _titleController.text = widget.record.title;
     _authorController.text = widget.record.author;
     _starController.text = widget.record.star.toString();
     _noteController.text = widget.record.note;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     double rate = widget.record.star.toDouble();
 
     String detailTitle;
@@ -707,6 +718,11 @@ class AddPageState extends State<AddPage>{
   @override
   Widget build(BuildContext context) {
     String detailTitle;
+    if(widget.page == 0) collection = "movie_review";
+    if(widget.page == 1) collection = "book_review";
+    if(widget.page == 2) collection = "exhibition_review";
+    if(widget.page == 3) collection = "concert_review";
+
     if(_page == 0){
       detailTitle = "Movie Review";
       _page = 0;
@@ -724,10 +740,6 @@ class AddPageState extends State<AddPage>{
       _page = 3;
     }
 
-    if(widget.page == 0) collection = "movie_review";
-    if(widget.page == 1) collection = "book_review";
-    if(widget.page == 2) collection = "exhibition_review";
-    if(widget.page == 3) collection = "concert_review";
     double rate2;
 
     return Scaffold(
