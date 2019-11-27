@@ -162,6 +162,17 @@ class _DiaryPageState extends State<DiaryPage> {
                                           child: Divider(color: Colors.black54),
                                         ),
                                         SizedBox(height: 10,),
+                                        Container(
+                                            margin: EdgeInsets.only(left: 30, right: 30),
+                                            width: 395,
+                                            height: 150,
+                                            child: (Record.fromSnapshot(item).url == "assets/default.jpg")
+                                                ?
+                                              Image.asset("assets/default.jpg", fit: BoxFit.fitWidth)
+                                                :
+                                              Image.network(Record.fromSnapshot(item).url, fit: BoxFit.fitWidth)
+                                        ),
+                                        SizedBox(height: 10,),
                                         Padding(
                                           padding: const EdgeInsets.only(left: 30, right: 30),
                                           child: Center(
