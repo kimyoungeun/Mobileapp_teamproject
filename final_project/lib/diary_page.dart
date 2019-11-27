@@ -3,6 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'signin_page.dart';
 import 'home.dart';
 import 'package:uuid/uuid.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+
+File _image;
 
 class DiaryPage extends StatefulWidget {
   @override
@@ -221,7 +226,8 @@ class _DiaryPageState extends State<DiaryPage> {
                                     'uid': userID,
                                     'docuID': Record.fromSnapshot(item).docuID,
                                     'month': selectedDate.substring(0,7),
-                                    'check' : [!status, !status]
+                                    'check' : [!status, !status],
+                                    'url' : Record.fromSnapshot(item).url
                                   });
                                 });
                               },
@@ -260,6 +266,7 @@ class Record {
   final DocumentReference reference;
   final String docuID;
   List check = List<bool>();
+  final String url;
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['date'] != null),
@@ -268,22 +275,27 @@ class Record {
         assert(map['noteTitle'] != null),
         assert(map['uid'] != null),
         assert(map['docuID'] != null),
+        //assert(map['url'] != null),
         date = map['date'],
         month = map['month'],
         note = map['note'],
         noteTitle = map['noteTitle'],
         uid = map['uid'],
         docuID = map['docuID'],
-        check = map['check'];
+        check = map['check'],
+        url = map['url'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
-  String toString() => "Record<$date:$month:$note:$noteTitle:$uid:$docuID>";
+  String toString() => "Record<$date:$month:$note:$noteTitle:$uid:$docuID:$url>";
 }
 
 class AddPage extends StatefulWidget{
+  final Record record;
+
+  AddPage({Key key, @required this.record}) : super(key: key);
   @override
   AddPageState createState() {
     return AddPageState();
@@ -291,6 +303,32 @@ class AddPage extends StatefulWidget{
 }
 
 class AddPageState extends State<AddPage>{
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _image = image;
+      print('Image Path $_image');
+    });
+  }
+
+  Future uploadPic(BuildContext context) async {
+    String _uploadedFileURL;
+    StorageReference storageReference = FirebaseStorage.instance
+        .ref()
+        .child(_image.path);
+    StorageUploadTask uploadTask = storageReference.putFile(_image);
+    await uploadTask.onComplete;
+    print('File Uploaded');
+    storageReference.getDownloadURL().then((fileURL) {
+      setState(() {
+        _uploadedFileURL = fileURL;
+      });
+    });
+
+    var downurl = await storageReference.getDownloadURL();
+    var url = downurl.toString();
+    //widget.record.reference.updateData({'url': url});
+  }
 
   final _noteController = TextEditingController();
   final _noteTitleController = TextEditingController();
@@ -306,57 +344,125 @@ class AddPageState extends State<AddPage>{
       ),
       body: Column(
         children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              //border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
-            ),
-            margin: EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
-            child: TextField(
-              style: TextStyle(fontSize: 20),
-              controller: _noteTitleController,
-              maxLines: 1,
-              decoration: InputDecoration(
-                hintText: "Title",
-                contentPadding: const EdgeInsets.fromLTRB(20.0, 50.0, 20.0, 10.0),
-              ),
-            ),
-          ),
-          SizedBox(height: 20.0),
-          Flexible(
+          Expanded(
+            flex: 1,
             child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
-              ),
-              margin: EdgeInsets.all(15.0),
+              margin: EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
               child: TextField(
-                controller: _noteController,
-                maxLines: 99,
+                style: TextStyle(fontSize: 20),
+                controller: _noteTitleController,
+                maxLines: 1,
                 decoration: InputDecoration(
-                  hintText: "Comment",
-                  contentPadding: const EdgeInsets.all(20.0),
+                  hintText: "Title",
+                  contentPadding: const EdgeInsets.fromLTRB(20.0, 50.0, 20.0, 10.0),
                 ),
               ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.only(bottom: 50.0),
-            child : RaisedButton(
-              color: Theme.of(context).primaryColor,
-              child: Text("SAVE", style: TextStyle(color: Colors.white),),
-              onPressed: () {
-                String a = uuid.v4();
-                Firestore.instance.collection('diary').document(a).setData({
-                  'date': selectedDate.substring(0,10),
-                  'month': selectedDate.substring(0,7),
-                  'note': _noteController.text,
-                  'noteTitle': _noteTitleController.text,
-                  'uid': userID,
-                  'docuID': a,
-                  'check': [false, false]
-                });
-                _noteController.clear();
-                Navigator.of(context).pop();
+          Expanded(
+            flex: 3,
+            child: InkWell(
+              child :Container(
+                  margin: EdgeInsets.only(top: 15, left: 15, right: 15),
+                  width: 395,
+                  height: 200,
+                  child: (_image != null)
+                      ?
+                  Image.file(_image, fit: BoxFit.fitWidth)
+                      :
+                  Image.asset('assets/default.jpg', fit: BoxFit.fitWidth)
+              ),
+              onTap: () {
+                getImage();
               },
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              padding: EdgeInsets.only(top: 15, left: 15, right: 15),
+              margin: EdgeInsets.only(top: 10),
+              child: Container(
+                  child: Text("# hashTag~~~~~~~~~~ from ML kit")
+              ),
+            )
+          ),
+          Expanded(
+            flex: 5,
+            child: Container(
+              padding: EdgeInsets.all(20),
+              margin: EdgeInsets.only(left: 15, right: 15, bottom: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+              ),
+              child: TextField(
+                controller: _noteController,
+                maxLines: 99,
+                decoration: InputDecoration.collapsed(
+                  hintText: "Comment",
+                  //contentPadding: const EdgeInsets.all(20.0),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              padding: EdgeInsets.only(bottom: 40.0),
+              child : RaisedButton(
+                color: Theme.of(context).primaryColor,
+                child: Text("SAVE", style: TextStyle(color: Colors.white),),
+                onPressed: () async {
+                  String a = uuid.v4();
+                  if(_image == null){
+                    Firestore.instance.collection('diary').document(a).setData({
+                      'date': selectedDate.substring(0,10),
+                      'month': selectedDate.substring(0,7),
+                      'note': _noteController.text,
+                      'noteTitle': _noteTitleController.text,
+                      'uid': userID,
+                      'docuID': a,
+                      'check': [false, false],
+                      'url': 'assets/default.jpg'
+                    });
+                    _noteController.clear();
+                    Navigator.of(context).pop();
+                    _image = null;
+                  }
+                  else{
+                    String _uploadedFileURL;
+                    StorageReference storageReference = FirebaseStorage.instance
+                        .ref()
+                        .child(_image.path);
+                    StorageUploadTask uploadTask = storageReference.putFile(_image);
+                    await uploadTask.onComplete;
+                    print('File Uploaded');
+                    storageReference.getDownloadURL().then((fileURL) {
+                      setState(() {
+                        _uploadedFileURL = fileURL;
+                      });
+                    });
+
+                    var downurl = await storageReference.getDownloadURL();
+                    var url = downurl.toString();
+
+                    Firestore.instance.collection('diary').document(a).setData({
+                      'date': selectedDate.substring(0,10),
+                      'month': selectedDate.substring(0,7),
+                      'note': _noteController.text,
+                      'noteTitle': _noteTitleController.text,
+                      'uid': userID,
+                      'docuID': a,
+                      'check': [false, false],
+                      'url': url
+                    });
+                    _noteController.clear();
+                    Navigator.of(context).pop();
+                    _image = null;
+                  }
+                },
+              ),
             ),
           ),
         ],
@@ -377,14 +483,45 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _image = image;
+      print('Image Path $_image');
+    });
+  }
+
+  Future uploadPic(BuildContext context) async {
+    String _uploadedFileURL;
+    StorageReference storageReference = FirebaseStorage.instance
+        .ref()
+        .child(_image.path);
+    StorageUploadTask uploadTask = storageReference.putFile(_image);
+    await uploadTask.onComplete;
+    print('File Uploaded');
+    storageReference.getDownloadURL().then((fileURL) {
+      setState(() {
+        _uploadedFileURL = fileURL;
+      });
+    });
+
+    var downurl = await storageReference.getDownloadURL();
+    var url = downurl.toString();
+    widget.record.reference.updateData({'url': url});
+  }
 
   final _noteController = TextEditingController();
   final _noteTitleController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  void initState(){
+    super.initState();
     _noteController.text = widget.record.note;
     _noteTitleController.text = widget.record.noteTitle;
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: new AppBar(
@@ -405,55 +542,94 @@ class _DetailPageState extends State<DetailPage> {
       ),
       body: Column(
         children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              //border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
-            ),
-            margin: EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
-            child: TextField(
-              style: TextStyle(fontSize: 20),
-              controller: _noteTitleController,
-              maxLines: 1,
-              decoration: InputDecoration(
-                hintText: "Title",
-                contentPadding: const EdgeInsets.fromLTRB(20.0, 50.0, 20.0, 10.0),
-              ),
-            ),
-          ),
-          SizedBox(height: 20.0),
-          Flexible(
+          Expanded(
+            flex: 1,
             child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
-              ),
-              margin: EdgeInsets.all(15.0),
+              margin: EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
               child: TextField(
-                controller: _noteController,
-                maxLines: 99,
+                style: TextStyle(fontSize: 20),
+                controller: _noteTitleController,
+                maxLines: 1,
                 decoration: InputDecoration(
-                  hintText: "Comment",
-                  contentPadding: const EdgeInsets.all(20.0),
+                  hintText: "Title",
+                  contentPadding: const EdgeInsets.fromLTRB(20.0, 50.0, 20.0, 10.0),
                 ),
               ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.only(bottom: 50.0),
-            child : RaisedButton(
-              color: Theme.of(context).primaryColor,
-              child: Text("SAVE", style: TextStyle(color: Colors.white),),
-              onPressed: () {
-                widget.record.reference.updateData({
-                  'note': _noteController.text,
-                });
-                _noteController.clear();
-
-                widget.record.reference.updateData({
-                  'noteTitle': _noteTitleController.text,
-                });
-                _noteTitleController.clear();
-                Navigator.of(context).pop();
+          Expanded(
+            flex: 3,
+            child: InkWell(
+              child :Container(
+                  margin: EdgeInsets.only(top: 15, left: 15, right: 15),
+                  width: 395,
+                  height: 200,
+                  child: (_image != null)
+                      ?
+                  Image.file(_image, fit: BoxFit.fitWidth)
+                      :
+                  (
+                      (widget.record.url != "assets/default.jpg")
+                          ? Image.network(widget.record.url, fit: BoxFit.fitWidth)
+                          : Image.asset('assets/default.jpg', fit: BoxFit.fitWidth)
+                  )
+              ),
+              onTap: () {
+                getImage();
               },
+            ),
+          ),
+          Expanded(
+              flex: 1,
+              child: Container(
+                padding: EdgeInsets.only(top: 15, left: 15, right: 15),
+                margin: EdgeInsets.only(top: 10),
+                child: Container(
+                    child: Text("# hashTag~~~~~~~~~~ from ML kit")
+                ),
+              )
+          ),
+          Expanded(
+            flex: 5,
+            child: Container(
+              padding: EdgeInsets.all(20),
+              margin: EdgeInsets.only(left: 15, right: 15, bottom: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
+              ),
+              child: TextField(
+                controller: _noteController,
+                maxLines: 99,
+                decoration: InputDecoration.collapsed(
+                  hintText: "Comment",
+                  //contentPadding: const EdgeInsets.all(20.0),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              padding: EdgeInsets.only(bottom: 40.0),
+              child : RaisedButton(
+                color: Theme.of(context).primaryColor,
+                child: Text("SAVE", style: TextStyle(color: Colors.white),),
+                onPressed: () {
+                  uploadPic(context);
+                  widget.record.reference.updateData({
+                    'note': _noteController.text,
+                  });
+                  _noteController.clear();
+
+                  widget.record.reference.updateData({
+                    'noteTitle': _noteTitleController.text,
+                  });
+                  _noteTitleController.clear();
+                  _image = null;
+                  Navigator.of(context).pop();
+                },
+              ),
             ),
           ),
         ],
