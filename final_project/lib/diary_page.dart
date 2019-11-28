@@ -27,6 +27,27 @@ class _DiaryPageState extends State<DiaryPage> {
     );
   }
 
+  Widget _chipsAlready(List<dynamic> tags) {
+    List<Chip> _chips = tags.map((label){
+      return Chip(
+        label: Text(label),
+        labelStyle: TextStyle(),
+        backgroundColor: Theme.of(context).primaryColor,
+      );
+    }).toList();
+    return Container(
+        margin: EdgeInsets.only(left: 30, right: 30),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 5,
+            children: _chips,
+          ),
+        )
+    );
+  }
+
   Widget _buildListCard(BuildContext context, List<DocumentSnapshot> snapshot) {
     List<DocumentSnapshot> reviews = snapshot;
 
@@ -169,10 +190,12 @@ class _DiaryPageState extends State<DiaryPage> {
                                             height: 150,
                                             child: (Record.fromSnapshot(item).url == "assets/default.jpg")
                                                 ?
-                                              Image.asset("assets/default.jpg", fit: BoxFit.fitWidth)
+                                            Image.asset("assets/default.jpg", fit: BoxFit.fitWidth)
                                                 :
-                                              Image.network(Record.fromSnapshot(item).url, fit: BoxFit.fitWidth)
+                                            Image.network(Record.fromSnapshot(item).url, fit: BoxFit.fitWidth)
                                         ),
+                                        SizedBox(height: 10,),
+                                        _chipsAlready(Record.fromSnapshot(item).tags),
                                         SizedBox(height: 10,),
                                         Padding(
                                           padding: const EdgeInsets.only(left: 30, right: 30),
@@ -239,7 +262,8 @@ class _DiaryPageState extends State<DiaryPage> {
                                     'docuID': Record.fromSnapshot(item).docuID,
                                     'month': selectedDate.substring(0,7),
                                     'check' : [!status, !status],
-                                    'url' : Record.fromSnapshot(item).url
+                                    'url' : Record.fromSnapshot(item).url,
+                                    'tags': Record.fromSnapshot(item).tags,
                                   });
                                 });
                               },
@@ -279,6 +303,7 @@ class Record {
   final String docuID;
   List check = List<bool>();
   final String url;
+  final dynamic tags;
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['date'] != null),
@@ -287,7 +312,7 @@ class Record {
         assert(map['noteTitle'] != null),
         assert(map['uid'] != null),
         assert(map['docuID'] != null),
-        //assert(map['url'] != null),
+  //assert(map['url'] != null),
         date = map['date'],
         month = map['month'],
         note = map['note'],
@@ -295,13 +320,14 @@ class Record {
         uid = map['uid'],
         docuID = map['docuID'],
         check = map['check'],
+        tags = map['tags'],
         url = map['url'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
-  String toString() => "Record<$date:$month:$note:$noteTitle:$uid:$docuID:$url>";
+  String toString() => "Record<$date:$month:$note:$noteTitle:$uid:$docuID:$url:$tags>";
 }
 
 class AddPage extends StatefulWidget{
@@ -388,7 +414,7 @@ class AddPageState extends State<AddPage>{
     _allChips.addAll(_textChips);
     return Expanded(
       child: Container(
-          padding: EdgeInsets.only(top: 5, left: 20, right: 20),
+          padding: EdgeInsets.only(top: 10, left: 20, right: 20),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Wrap(
@@ -486,7 +512,8 @@ class AddPageState extends State<AddPage>{
                       'uid': userID,
                       'docuID': a,
                       'check': [false, false],
-                      'url': 'assets/default.jpg'
+                      'url': 'assets/default.jpg',
+                      'tags': <String>[],
                     });
                     _noteController.clear();
                     Navigator.of(context).pop();
@@ -508,7 +535,14 @@ class AddPageState extends State<AddPage>{
 
                     var downurl = await storageReference.getDownloadURL();
                     var url = downurl.toString();
-
+                    var i;
+                    List<String> _allString = <String> [];
+                    for (i = 0; i < _labelDetected.length; i++) {
+                      _allString.add(_labelDetected[i].label);
+                    }
+                    for (i = 0; i < _textDetected.length; i++) {
+                      _allString.add(_textDetected[i].text);
+                    }
                     Firestore.instance.collection('diary').document(a).setData({
                       'date': selectedDate.substring(0,10),
                       'month': selectedDate.substring(0,7),
@@ -517,7 +551,8 @@ class AddPageState extends State<AddPage>{
                       'uid': userID,
                       'docuID': a,
                       'check': [false, false],
-                      'url': url
+                      'url': url,
+                      'tags': FieldValue.arrayUnion(_allString),
                     });
                     _noteController.clear();
                     Navigator.of(context).pop();
@@ -545,10 +580,12 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  bool newpic = false;
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       _image = image;
+      newpic = true;
       print('Image Path $_image');
     });
     try {
@@ -618,13 +655,36 @@ class _DetailPageState extends State<DetailPage> {
     _allChips.addAll(_textChips);
     return Expanded(
       child: Container(
-          padding: EdgeInsets.only(top: 5, left: 20, right: 20),
+          padding: EdgeInsets.only(top: 10, left: 20, right: 20),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Wrap(
               alignment: WrapAlignment.center,
               spacing: 5,
               children: _allChips,
+            ),
+          )
+      ),
+    );
+  }
+
+  Widget _chipsAlready(List<dynamic> tags) {
+    List<Chip> _chips = tags.map((label){
+      return Chip(
+        label: Text(label),
+        labelStyle: TextStyle(),
+        backgroundColor: Theme.of(context).primaryColor,
+      );
+    }).toList();
+    return Expanded(
+      child: Container(
+          padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 5,
+              children: _chips,
             ),
           )
       ),
@@ -700,7 +760,7 @@ class _DetailPageState extends State<DetailPage> {
               },
             ),
           ),
-          _buildChips(),
+          newpic ? _buildChips() : _chipsAlready(widget.record.tags),
           Expanded(
             flex: 5,
             child: Container(
@@ -728,15 +788,26 @@ class _DetailPageState extends State<DetailPage> {
                 color: Theme.of(context).primaryColor,
                 child: Text("SAVE", style: TextStyle(color: Colors.white),),
                 onPressed: () {
+                  var i;
+                  List<String> _allString = <String> [];
+                  for (i = 0; i < _labelDetected.length; i++) {
+                    _allString.add(_labelDetected[i].label);
+                  }
+                  for (i = 0; i < _textDetected.length; i++) {
+                    _allString.add(_textDetected[i].text);
+                  }
                   uploadPic(context);
                   widget.record.reference.updateData({
                     'note': _noteController.text,
-                  });
-                  _noteController.clear();
-
-                  widget.record.reference.updateData({
                     'noteTitle': _noteTitleController.text,
                   });
+                  if(newpic){
+                    widget.record.reference.updateData({
+                      'tags': FieldValue.delete(),});
+                    widget.record.reference.updateData({
+                      'tags': FieldValue.arrayUnion(_allString),});
+                  }
+                  _noteController.clear();
                   _noteTitleController.clear();
                   _image = null;
                   Navigator.of(context).pop();
