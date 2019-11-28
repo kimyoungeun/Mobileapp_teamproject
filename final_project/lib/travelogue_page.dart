@@ -510,6 +510,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     _allChips.addAll(_textChips);
     return Expanded(
       child: Container(
+          padding: EdgeInsets.only(top: 5),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Wrap(
@@ -609,7 +610,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(20),
+                  margin: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
                     borderRadius: BorderRadius.circular(15.0),
@@ -624,7 +625,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(20),
+                  margin: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
                     borderRadius: BorderRadius.circular(15.0),
@@ -639,7 +640,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(20),
+                  margin: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
                     borderRadius: BorderRadius.circular(15.0),
@@ -654,7 +655,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(20),
+                  margin: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
                     borderRadius: BorderRadius.circular(15.0),
@@ -669,7 +670,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(20),
+                  margin: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
                     borderRadius: BorderRadius.circular(15.0),
@@ -684,7 +685,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(20),
+                  margin: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
                     borderRadius: BorderRadius.circular(15.0),
@@ -699,7 +700,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                 ),
                 Container(
                   padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(20),
+                  margin: EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 20),
                   decoration: BoxDecoration(
                     border: Border.all(color: Theme.of(context).primaryColor, width: 1.5),
                     borderRadius: BorderRadius.circular(15.0),
