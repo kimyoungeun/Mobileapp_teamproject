@@ -220,7 +220,8 @@ class AddPageState extends State<AddPage>{
                 'note5': "",
                 'note6': "",
                 'note7': "",
-                'url': 'assets/default.jpg'
+                'url': 'assets/default.jpg',
+                'tags': <String>[],
               });
             }
             Navigator.of(context).pop();
@@ -394,6 +395,7 @@ class Record {
   final String docuID;
   final int day;
   final String url;
+  final dynamic tags;
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['startdate'] != null),
@@ -417,13 +419,14 @@ class Record {
         uid = map['uid'],
         docuID = map['docuID'],
         day = map['day'],
+        tags = map['tags'],
         url = map['url'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
-  String toString() => "Record<$startdate:$lastdate:$month:$note:$note2:$note3:$note4:$note5:$note6:$note7:$place:$uid:$docuID:$day:$url>";
+  String toString() => "Record<$startdate:$lastdate:$month:$note:$note2:$note3:$note4:$note5:$note6:$note7:$place:$uid:$docuID:$day:$url:$tags>";
 }
 
 class DetailPage extends StatefulWidget {
@@ -437,10 +440,12 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateMixin{
+  bool newpic = false;
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       _image = image;
+      newpic = true;
       print('Image Path $_image');
     });
     try {
@@ -523,6 +528,30 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     );
   }
 
+  Widget _chipsAlready(List<dynamic> tags) {
+    List<Chip> _chips = tags.map((label){
+      return Chip(
+        label: Text(label),
+        labelStyle: TextStyle(),
+        backgroundColor: Theme.of(context).primaryColor,
+      );
+    }).toList();
+    return Expanded(
+      child: Container(
+          padding: EdgeInsets.only(top: 5, left: 20, right: 20),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 5,
+              children: _chips,
+            ),
+          )
+      ),
+    );
+  }
+
+
   final _noteController = TextEditingController();
   final _noteController2 = TextEditingController();
   final _noteController3 = TextEditingController();
@@ -597,7 +626,11 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
               },
             ),
           ),
-          _buildChips(),
+          newpic
+              ?
+          _buildChips()
+              :
+          _chipsAlready(widget.record.tags),
           Expanded(
             flex: 5,
             child: new PageView(
@@ -727,6 +760,14 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                       color: Theme.of(context).primaryColor,
                       child: Text("SAVE", style: TextStyle(color: Colors.white),),
                       onPressed: () {
+                        var i;
+                        List<String> _allString = <String> [];
+                        for (i = 0; i < _labelDetected.length; i++) {
+                          _allString.add(_labelDetected[i].label);
+                        }
+                        for (i = 0; i < _textDetected.length; i++) {
+                          _allString.add(_textDetected[i].text);
+                        }
                         uploadPic(context);
                         widget.record.reference.updateData({
                           'note': _noteController.text,
@@ -736,6 +777,10 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
                           'note5': _noteController5.text,
                           'note6': _noteController6.text,
                           'note7': _noteController7.text,
+                          'tags': FieldValue.delete(),
+                        });
+                        widget.record.reference.updateData({
+                          'tags': FieldValue.arrayUnion(_allString),
                         });
                         Navigator.of(context).pop();
                         _image = null;
