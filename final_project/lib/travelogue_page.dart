@@ -510,7 +510,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
     _allChips.addAll(_textChips);
     return Expanded(
       child: Container(
-          padding: EdgeInsets.only(top: 5),
+          padding: EdgeInsets.only(top: 5, left: 20, right: 20),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Wrap(
