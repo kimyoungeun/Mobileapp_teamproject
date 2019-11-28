@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
+import 'package:mlkit/mlkit.dart';
 
 File _image;
 
@@ -320,6 +321,16 @@ class AddPageState extends State<AddPage>{
       _image = image;
       print('Image Path $_image');
     });
+    try {
+      var textDetected = await textDetector.detectFromPath(_image?.path);
+      var labelDetected = await labelDetector.detectFromPath(_image?.path);
+      setState(() {
+        _textDetected = textDetected;
+        _labelDetected = labelDetected;
+      });
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   Future uploadPic(BuildContext context) async {
@@ -338,7 +349,56 @@ class AddPageState extends State<AddPage>{
 
     var downurl = await storageReference.getDownloadURL();
     var url = downurl.toString();
-    //widget.record.reference.updateData({'url': url});
+    widget.record.reference.updateData({'url': url});
+  }
+
+  List<VisionText> _textDetected = <VisionText>[];
+  List<VisionLabel> _labelDetected = <VisionLabel>[];
+
+  FirebaseVisionTextDetector textDetector = FirebaseVisionTextDetector.instance;
+  FirebaseVisionLabelDetector labelDetector = FirebaseVisionLabelDetector.instance;
+
+  List<Chip> _TextChip(List<VisionText> texts) {
+    List<Chip> _textChips = _textDetected.map((text){
+      return Chip(
+        label: Text(text.text),
+        labelStyle: TextStyle(),
+        backgroundColor: Theme.of(context).primaryColor,
+      );
+    }).toList();
+    return _textChips;
+  }
+
+  List<Chip> _LabelChip(List<VisionLabel> labels){
+    List<Chip> _labelChips = _labelDetected.map((label){
+      return Chip(
+        label: Text(label.label),
+        labelStyle: TextStyle(),
+        backgroundColor: Theme.of(context).primaryColor,
+      );
+    }).toList();
+    return _labelChips;
+  }
+
+  Widget _buildChips(){
+    List<Chip> _allChips = <Chip> [];
+    List<Chip> _labelChips = _LabelChip(_labelDetected);
+    List<Chip> _textChips = _TextChip(_textDetected);
+    _allChips.addAll(_labelChips);
+    _allChips.addAll(_textChips);
+    return Expanded(
+      child: Container(
+          padding: EdgeInsets.only(top: 5, left: 20, right: 20),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 5,
+              children: _allChips,
+            ),
+          )
+      ),
+    );
   }
 
   final _noteController = TextEditingController();
@@ -388,16 +448,7 @@ class AddPageState extends State<AddPage>{
               },
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              padding: EdgeInsets.only(top: 15, left: 15, right: 15),
-              margin: EdgeInsets.only(top: 10),
-              child: Container(
-                  child: Text("# hashTag~~~~~~~~~~ from ML kit")
-              ),
-            )
-          ),
+          _buildChips(),
           Expanded(
             flex: 5,
             child: Container(
@@ -500,6 +551,16 @@ class _DetailPageState extends State<DetailPage> {
       _image = image;
       print('Image Path $_image');
     });
+    try {
+      var textDetected = await textDetector.detectFromPath(_image?.path);
+      var labelDetected = await labelDetector.detectFromPath(_image?.path);
+      setState(() {
+        _textDetected = textDetected;
+        _labelDetected = labelDetected;
+      });
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   Future uploadPic(BuildContext context) async {
@@ -519,6 +580,55 @@ class _DetailPageState extends State<DetailPage> {
     var downurl = await storageReference.getDownloadURL();
     var url = downurl.toString();
     widget.record.reference.updateData({'url': url});
+  }
+
+  List<VisionText> _textDetected = <VisionText>[];
+  List<VisionLabel> _labelDetected = <VisionLabel>[];
+
+  FirebaseVisionTextDetector textDetector = FirebaseVisionTextDetector.instance;
+  FirebaseVisionLabelDetector labelDetector = FirebaseVisionLabelDetector.instance;
+
+  List<Chip> _TextChip(List<VisionText> texts) {
+    List<Chip> _textChips = _textDetected.map((text){
+      return Chip(
+        label: Text(text.text),
+        labelStyle: TextStyle(),
+        backgroundColor: Theme.of(context).primaryColor,
+      );
+    }).toList();
+    return _textChips;
+  }
+
+  List<Chip> _LabelChip(List<VisionLabel> labels){
+    List<Chip> _labelChips = _labelDetected.map((label){
+      return Chip(
+        label: Text(label.label),
+        labelStyle: TextStyle(),
+        backgroundColor: Theme.of(context).primaryColor,
+      );
+    }).toList();
+    return _labelChips;
+  }
+
+  Widget _buildChips(){
+    List<Chip> _allChips = <Chip> [];
+    List<Chip> _labelChips = _LabelChip(_labelDetected);
+    List<Chip> _textChips = _TextChip(_textDetected);
+    _allChips.addAll(_labelChips);
+    _allChips.addAll(_textChips);
+    return Expanded(
+      child: Container(
+          padding: EdgeInsets.only(top: 5, left: 20, right: 20),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 5,
+              children: _allChips,
+            ),
+          )
+      ),
+    );
   }
 
   final _noteController = TextEditingController();
@@ -590,16 +700,7 @@ class _DetailPageState extends State<DetailPage> {
               },
             ),
           ),
-          Expanded(
-              flex: 1,
-              child: Container(
-                padding: EdgeInsets.only(top: 15, left: 15, right: 15),
-                margin: EdgeInsets.only(top: 10),
-                child: Container(
-                    child: Text("# hashTag~~~~~~~~~~ from ML kit")
-                ),
-              )
-          ),
+          _buildChips(),
           Expanded(
             flex: 5,
             child: Container(
