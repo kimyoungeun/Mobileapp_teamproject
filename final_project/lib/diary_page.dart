@@ -384,32 +384,42 @@ class AddPageState extends State<AddPage>{
   FirebaseVisionTextDetector textDetector = FirebaseVisionTextDetector.instance;
   FirebaseVisionLabelDetector labelDetector = FirebaseVisionLabelDetector.instance;
 
-  List<Chip> _TextChip(List<VisionText> texts) {
-    List<Chip> _textChips = _textDetected.map((text){
-      return Chip(
-        label: Text(text.text),
-        labelStyle: TextStyle(),
-        backgroundColor: Theme.of(context).primaryColor,
+  List<ActionChip> _TextChip(List<VisionText> texts) {
+    List<ActionChip> _textChips = _textDetected.map((text){
+      return ActionChip(
+          label: Text(text.text),
+          labelStyle: TextStyle(),
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            setState(() {
+              _noteController.text = _noteController.text + text.text;
+            });
+          }
       );
     }).toList();
     return _textChips;
   }
 
-  List<Chip> _LabelChip(List<VisionLabel> labels){
-    List<Chip> _labelChips = _labelDetected.map((label){
-      return Chip(
-        label: Text(label.label),
-        labelStyle: TextStyle(),
-        backgroundColor: Theme.of(context).primaryColor,
+  List<ActionChip> _LabelChip(List<VisionLabel> labels){
+    List<ActionChip> _labelChips = _labelDetected.map((label){
+      return ActionChip(
+          label: Text(label.label),
+          labelStyle: TextStyle(),
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            setState(() {
+              _noteController.text = _noteController.text + label.label;
+            });
+          }
       );
     }).toList();
     return _labelChips;
   }
 
-  Widget _buildChips(){
-    List<Chip> _allChips = <Chip> [];
-    List<Chip> _labelChips = _LabelChip(_labelDetected);
-    List<Chip> _textChips = _TextChip(_textDetected);
+  Widget _buildChips() {
+    List<ActionChip> _allChips = <ActionChip>[];
+    List<ActionChip> _labelChips = _LabelChip(_labelDetected);
+    List<ActionChip> _textChips = _TextChip(_textDetected);
     _allChips.addAll(_labelChips);
     _allChips.addAll(_textChips);
     return Expanded(
@@ -625,32 +635,42 @@ class _DetailPageState extends State<DetailPage> {
   FirebaseVisionTextDetector textDetector = FirebaseVisionTextDetector.instance;
   FirebaseVisionLabelDetector labelDetector = FirebaseVisionLabelDetector.instance;
 
-  List<Chip> _TextChip(List<VisionText> texts) {
-    List<Chip> _textChips = _textDetected.map((text){
-      return Chip(
-        label: Text(text.text),
-        labelStyle: TextStyle(),
-        backgroundColor: Theme.of(context).primaryColor,
+  List<ActionChip> _TextChip(List<VisionText> texts) {
+    List<ActionChip> _textChips = _textDetected.map((text){
+      return ActionChip(
+          label: Text(text.text),
+          labelStyle: TextStyle(),
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            setState(() {
+              _noteController.text = _noteController.text + text.text;
+            });
+          }
       );
     }).toList();
     return _textChips;
   }
 
-  List<Chip> _LabelChip(List<VisionLabel> labels){
-    List<Chip> _labelChips = _labelDetected.map((label){
-      return Chip(
-        label: Text(label.label),
-        labelStyle: TextStyle(),
-        backgroundColor: Theme.of(context).primaryColor,
+  List<ActionChip> _LabelChip(List<VisionLabel> labels){
+    List<ActionChip> _labelChips = _labelDetected.map((label){
+      return ActionChip(
+          label: Text(label.label),
+          labelStyle: TextStyle(),
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            setState(() {
+              _noteController.text = _noteController.text + label.label;
+            });
+          }
       );
     }).toList();
     return _labelChips;
   }
 
   Widget _buildChips(){
-    List<Chip> _allChips = <Chip> [];
-    List<Chip> _labelChips = _LabelChip(_labelDetected);
-    List<Chip> _textChips = _TextChip(_textDetected);
+    List<ActionChip> _allChips = <ActionChip> [];
+    List<ActionChip> _labelChips = _LabelChip(_labelDetected);
+    List<ActionChip> _textChips = _TextChip(_textDetected);
     _allChips.addAll(_labelChips);
     _allChips.addAll(_textChips);
     return Expanded(
@@ -669,11 +689,16 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Widget _chipsAlready(List<dynamic> tags) {
-    List<Chip> _chips = tags.map((label){
-      return Chip(
-        label: Text(label),
-        labelStyle: TextStyle(),
-        backgroundColor: Theme.of(context).primaryColor,
+    List<ActionChip> _chips = tags.map((label){
+      return ActionChip(
+          label: Text(label),
+          labelStyle: TextStyle(),
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            setState(() {
+              _noteController.text = _noteController.text + label;
+            });
+          }
       );
     }).toList();
     return Expanded(

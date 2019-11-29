@@ -485,37 +485,87 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
   FirebaseVisionTextDetector textDetector = FirebaseVisionTextDetector.instance;
   FirebaseVisionLabelDetector labelDetector = FirebaseVisionLabelDetector.instance;
 
-  List<Chip> _TextChip(List<VisionText> texts) {
-    List<Chip> _textChips = _textDetected.map((text){
-      return Chip(
-        label: Text(text.text),
-        labelStyle: TextStyle(),
-        backgroundColor: Theme.of(context).primaryColor,
+  List<ActionChip> _TextChip(List<VisionText> texts) {
+    List<ActionChip> _textChips = _textDetected.map((text){
+      return ActionChip(
+          label: Text(text.text),
+          labelStyle: TextStyle(),
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            setState(() {
+              if(_page == 0){
+                _noteController.text = _noteController.text + text.text;
+              }
+              if(_page == 1) {
+                _noteController2.text = _noteController2.text + text.text;
+              }
+              if(_page == 2) {
+                _noteController3.text = _noteController3.text + text.text;
+              }
+              if(_page == 3) {
+                _noteController4.text = _noteController4.text + text.text;
+              }
+              if(_page == 4) {
+                _noteController5.text = _noteController5.text + text.text;
+              }
+              if(_page == 5) {
+                _noteController6.text = _noteController6.text + text.text;
+              }
+              else {
+                _noteController7.text = _noteController7.text + text.text;
+              }
+            });
+          }
       );
     }).toList();
     return _textChips;
   }
 
-  List<Chip> _LabelChip(List<VisionLabel> labels){
-    List<Chip> _labelChips = _labelDetected.map((label){
-      return Chip(
-        label: Text(label.label),
-        labelStyle: TextStyle(),
-        backgroundColor: Theme.of(context).primaryColor,
+  List<ActionChip> _LabelChip(List<VisionLabel> labels){
+    List<ActionChip> _labelChips = _labelDetected.map((label){
+      return ActionChip(
+          label: Text(label.label),
+          labelStyle: TextStyle(),
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            setState(() {
+              if(_page == 0){
+                _noteController.text = _noteController.text + label.label;
+              }
+              if(_page == 1) {
+                _noteController2.text = _noteController2.text + label.label;
+              }
+              if(_page == 2) {
+                _noteController3.text = _noteController3.text + label.label;
+              }
+              if(_page == 3) {
+                _noteController4.text = _noteController4.text + label.label;
+              }
+              if(_page == 4) {
+                _noteController5.text = _noteController5.text + label.label;
+              }
+              if(_page == 5) {
+                _noteController6.text = _noteController6.text + label.label;
+              }
+              else {
+                _noteController7.text = _noteController7.text + label.label;
+              }
+            });
+          }
       );
     }).toList();
     return _labelChips;
   }
 
   Widget _buildChips(){
-    List<Chip> _allChips = <Chip> [];
-    List<Chip> _labelChips = _LabelChip(_labelDetected);
-    List<Chip> _textChips = _TextChip(_textDetected);
+    List<ActionChip> _allChips = <ActionChip> [];
+    List<ActionChip> _labelChips = _LabelChip(_labelDetected);
+    List<ActionChip> _textChips = _TextChip(_textDetected);
     _allChips.addAll(_labelChips);
     _allChips.addAll(_textChips);
     return Expanded(
       child: Container(
-          padding: EdgeInsets.only(top: 5, left: 20, right: 20),
+          padding: EdgeInsets.only(top: 10, left: 20, right: 20),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Wrap(
@@ -529,16 +579,41 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
   }
 
   Widget _chipsAlready(List<dynamic> tags) {
-    List<Chip> _chips = tags.map((label){
-      return Chip(
-        label: Text(label),
-        labelStyle: TextStyle(),
-        backgroundColor: Theme.of(context).primaryColor,
+    List<ActionChip> _chips = tags.map((label){
+      return ActionChip(
+          label: Text(label),
+          labelStyle: TextStyle(),
+          backgroundColor: Theme.of(context).primaryColor,
+          onPressed: () {
+            setState(() {
+              if(_page == 0){
+                _noteController.text = _noteController.text + label;
+              }
+              if(_page == 1) {
+                _noteController2.text = _noteController2.text + label;
+              }
+              if(_page == 2) {
+                _noteController3.text = _noteController3.text + label;
+              }
+              if(_page == 3) {
+                _noteController4.text = _noteController4.text + label;
+              }
+              if(_page == 4) {
+                _noteController5.text = _noteController5.text + label;
+              }
+              if(_page == 5) {
+                _noteController6.text = _noteController6.text + label;
+              }
+              else {
+                _noteController7.text = _noteController7.text + label;
+              }
+            });
+          }
       );
     }).toList();
     return Expanded(
       child: Container(
-          padding: EdgeInsets.only(top: 5, left: 20, right: 20),
+          padding: EdgeInsets.only(top: 10, left: 20, right: 20),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Wrap(
@@ -626,11 +701,7 @@ class _DetailPageState extends State<DetailPage> with SingleTickerProviderStateM
               },
             ),
           ),
-          newpic
-              ?
-          _buildChips()
-              :
-          _chipsAlready(widget.record.tags),
+          newpic ? _buildChips() : _chipsAlready(widget.record.tags),
           Expanded(
             flex: 5,
             child: new PageView(
