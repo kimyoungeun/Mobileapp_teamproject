@@ -194,8 +194,8 @@ class _DiaryPageState extends State<DiaryPage> {
                                                 :
                                             Image.network(Record.fromSnapshot(item).url, fit: BoxFit.fitWidth)
                                         ),
-                                        SizedBox(height: 10,),
-                                        _chipsAlready(Record.fromSnapshot(item).tags),
+                                        //SizedBox(height: 10,),
+                                        //_chipsAlready(Record.fromSnapshot(item).tags),
                                         SizedBox(height: 10,),
                                         Padding(
                                           padding: const EdgeInsets.only(left: 30, right: 30),
